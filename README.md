@@ -1,16 +1,30 @@
-# F1 Team Manager Simulator — v0.2
+# F1 Team Manager Simulator v0.3
 
-## Executar
-Abra `index.html` diretamente no navegador (Chrome, Edge ou Firefox). Esta versão é independente: CSS e JavaScript estão dentro do próprio HTML, sem módulos externos ou servidor local obrigatório.
+## Como executar
+1. Extraia o arquivo ZIP.
+2. Abra a pasta `F1-Team-Manager-Simulator-v0.3`.
+3. Abra `index.html` no Chrome ou Edge.
 
-## Funcionalidades
-- Selecionar uma das cinco equipes.
-- Iniciar uma carreira.
-- Navegar entre Visão geral, Minha equipe, Desenvolvimento, Calendário e Central de corrida.
-- Abrir Configurações e reiniciar a carreira.
-- Salvar a carreira no LocalStorage do navegador.
+Não precisa instalar nada nem usar Live Server.
 
-## Limitações
-Esta é a fundação funcional da interface. Corridas, colisões, IA, estratégia de pneus, pit stops, finanças avançadas e desenvolvimento de componentes serão implementados em etapas futuras.
+## O que há nesta versão
+- 11 equipes da temporada 2026 e 22 pilotos titulares.
+- Seleção de equipe por cartão.
+- Início de carreira.
+- Tela Minha equipe com dupla de pilotos e unidade de potência.
+- Navegação funcional entre Visão geral, Equipes 2026, Minha equipe, Desenvolvimento e Calendário.
+- Salvamento local da equipe escolhida via localStorage.
+- Reinício de carreira com confirmação.
 
-Equipes e pilotos são fictícios.
+## Limitações conhecidas
+- Desenvolvimento e calendário são telas estruturais, ainda sem sistemas de jogo.
+- Não há simulação de corrida, economia, contratação ou evolução de peças nesta versão.
+- O salvamento fica no navegador e dispositivo usados.
+- Esta versão foi reconstruída como HTML independente porque o fonte anterior não estava disponível nesta conversa.
+
+## Próximas etapas
+1. Testar todos os botões e o salvamento.
+2. Implementar orçamento e contratos.
+3. Implementar desenvolvimento do carro.
+4. Criar a simulação de corrida 2D.
+5. Adicionar criação de equipe própria em versão futura.
