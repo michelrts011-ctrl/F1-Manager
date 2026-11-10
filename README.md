@@ -1,18 +1,27 @@
-# F1 Team Manager Simulator · v0.7
+# F1 Team Manager Simulator · v0.8
 
-## Correção principal
-- Corrigido o tratamento de clique dos botões de desenvolvimento com delegação de eventos em um contêiner persistente.
-- Removida a confirmação modal que interrompia o fluxo de início do projeto.
-- O clique agora inicia diretamente o projeto, desconta o custo, registra a transação e atualiza a interface.
-- Mensagens explícitas para carreira não iniciada, projeto já ativo, nível máximo e saldo insuficiente.
-- A tela de desenvolvimento é atualizada ao ser aberta.
+## Objetivo da atualização
+Conectar o desenvolvimento técnico ao desempenho real do monoposto e ampliar a leitura da garagem.
 
-## Compatibilidade
-- Mantém a mesma chave de armazenamento local da versão anterior (`ftms_v05_career`) para preservar a carreira salva no navegador.
-- Continua sendo um simulador local, executado diretamente no navegador.
+## Novidades
+- Telemetria técnica do carro: velocidade, curvas, estabilidade, eficiência e gestão de pneus.
+- Valores-base fictícios por equipe, mantendo diferenças entre os carros do grid.
+- Melhorias de aerodinâmica, unidade de potência, chassi e suspensão alteram atributos específicos.
+- A simulação de corrida utiliza os atributos técnicos por setor, com efeitos diferentes em retas e curvas.
+- Eficiência influencia consumo de combustível; suspensão e chassi influenciam desgaste dos pneus.
+- Garagem mostra o desempenho atual, comparação com o pacote-base e últimas evoluções.
+- Engenharia mostra telemetria e histórico de projetos concluídos.
+- Migração automática dos saves anteriores, preservando a chave localStorage `ftms_v05_career`.
 
-## Como usar
-1. Extraia o ZIP.
-2. Abra `index.html` no navegador.
-3. Abra Desenvolvimento do carro e clique em Desenvolver.
-4. Vá para Gestão financeira e clique em Fechar mês para concluir o projeto.
+## Como jogar
+1. Abra `index.html` no navegador.
+2. Carregue sua carreira existente ou inicie uma equipe.
+3. Em Desenvolvimento do carro, inicie um projeto.
+4. Em Gestão financeira, feche o mês para concluir e instalar a melhoria.
+5. Compare os atributos na Garagem ou na Engenharia e dispute uma corrida para sentir a diferença.
+
+## Observações
+- Valores de desempenho e custos são parâmetros fictícios de gameplay.
+- O circuito e as corridas continuam sendo uma simulação demonstrativa de 12 voltas.
+- A versão não adiciona clima dinâmico, Safety Car, colisões físicas ou calendário completo.
+- A chave de salvamento foi mantida para preservar carreiras da versão 0.7.

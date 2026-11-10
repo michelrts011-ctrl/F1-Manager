@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F1 Team Manager Simulator · v0.7</title>
+<title>F1 Team Manager Simulator · v0.8</title>
 <style>
 :root{--bg:#090d14;--panel:#111925;--panel2:#151f2d;--line:#263346;--muted:#91a0b5;--text:#edf3fb;--accent:#e11d38;--cyan:#55c7df;--green:#48c78e;--shadow:0 18px 50px #0006}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% -20%,#1b2c43 0,transparent 45%),var(--bg);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}
@@ -57,12 +57,31 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
 @media(max-width:980px){.race-layout{grid-template-columns:1fr}}
 @media(max-width:560px){.race-controls-grid{grid-template-columns:1fr}.race-controls .btn{flex:1}}
 
+
+/* BUILD 0.8 · Technical car telemetry */
+.telemetry-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.metric-card{background:#0e1723;border:1px solid #26374b;border-radius:10px;padding:13px;min-width:0}
+.metric-top{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:11px;color:var(--muted)}
+.metric-value{font-size:22px;font-weight:850;margin:7px 0 8px;font-variant-numeric:tabular-nums}
+.metric-track{height:6px;background:#253449;border-radius:99px;overflow:hidden}
+.metric-track span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),#3b82f6);border-radius:99px}
+.telemetry-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.telemetry-head h2{font-size:14px;margin:0}
+.metric-delta{font-size:10px;color:var(--green);font-weight:700}
+.history-list{display:grid;gap:8px}
+.history-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#0e1723;font-size:11px}
+.history-item strong{display:block;font-size:12px;margin-bottom:3px}
+.history-item small{color:var(--muted)}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:1050px){.telemetry-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.telemetry-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.comparison-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
 <header class="topbar">
  <div class="brand"><div class="brandmark">F1</div><div>TEAM MANAGER<small>RACE OPERATIONS SIMULATOR</small></div></div>
- <div class="topright"><span>SEASON 2026</span><span class="version">BUILD 0.7.0</span></div>
+ <div class="topright"><span>SEASON 2026</span><span class="version">BUILD 0.8.0</span></div>
 </header>
 <div class="layout">
 <aside>
@@ -123,7 +142,7 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
 </section>
 <section id="development" class="section">
  <div class="pagehead"><div><div class="eyebrow">R&D / ENGENHARIA</div><h1>Desenvolvimento do carro</h1><p class="sub">Invista em áreas técnicas para melhorar o desempenho do seu monoposto.</p></div></div>
- <div class="notice">Sistema de desenvolvimento fictício para gameplay. Cada projeto custa dinheiro e leva um mês para ficar pronto. Apenas um projeto pode ficar ativo por vez.</div>
+ <div class="notice">Sistema de desenvolvimento fictício para gameplay. Cada projeto custa dinheiro e leva um mês para ficar pronto. As melhorias alteram velocidade, curvas, estabilidade, eficiência e gestão dos pneus nas corridas.</div>
  <div class="grid stats">
   <div class="card"><div class="statlabel">DESEMPENHO GERAL</div><div class="statvalue" id="carRating">—</div><div class="statfoot">Índice técnico do carro</div></div>
   <div class="card"><div class="statlabel">PROJETOS CONCLUÍDOS</div><div class="statvalue" id="projectsDone">—</div><div class="statfoot">Evoluções instaladas</div></div>
@@ -131,12 +150,14 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
   <div class="card"><div class="statlabel">CAIXA DISPONÍVEL</div><div class="statvalue" id="devCash" style="font-size:20px">—</div><div class="statfoot">Orçamento da equipe</div></div>
  </div>
  <div id="activeProject" class="projectbox"><strong>Nenhum projeto em andamento</strong><p class="muted">Escolha uma área abaixo para iniciar o desenvolvimento.</p></div>
+ <div id="developmentTelemetry" class="card" style="margin-bottom:16px"><div class="empty">Os dados técnicos aparecerão após assumir uma equipe.</div></div>
  <div id="developmentContent" class="grid devgrid"><div class="empty">Assuma uma equipe para acessar a engenharia.</div></div>
+ <div id="developmentHistoryPanel" class="card" style="margin-top:16px"><div class="empty">O histórico será exibido após concluir projetos.</div></div>
 </section>
 
 <section id="race" class="section">
  <div class="pagehead"><div><div class="eyebrow">RACE CONTROL / LIVE OPERATIONS</div><h1>Central de corrida</h1><p class="sub">Acompanhe os 22 carros e intervenha na estratégia dos seus dois pilotos.</p></div><span class="pill">SIMULAÇÃO 2D · 12 VOLTAS</span></div>
- <div class="notice">Modo híbrido: a corrida é simulada automaticamente. Você controla o ritmo e pode chamar seus pilotos para os boxes. Velocidade padrão 1×, sem aceleração artificial.</div>
+ <div class="notice">Modo híbrido: o desempenho agora considera a engenharia do carro. Potência favorece retas; aerodinâmica e chassi favorecem curvas e estabilidade; suspensão reduz desgaste dos pneus. Você controla ritmo e pit stops.</div>
  <div class="race-layout">
   <div>
    <div class="race-canvas-wrap"><canvas id="raceCanvas" width="900" height="520" aria-label="Circuito 2D com os carros da corrida"></canvas><div class="race-overlay" id="raceStatus">AGUARDANDO LARGADA</div></div>
@@ -207,14 +228,28 @@ const DRIVER_GAME_DATA={
  "Lando Norris":[94,6.0],"Oscar Piastri":[92,5.2],"George Russell":[91,5.0],"Kimi Antonelli":[84,2.0],"Max Verstappen":[97,7.0],"Isack Hadjar":[82,1.5],"Charles Leclerc":[94,6.2],"Lewis Hamilton":[93,6.5],"Alexander Albon":[87,3.0],"Carlos Sainz":[90,4.8],"Liam Lawson":[83,1.8],"Arvid Lindblad":[78,1.0],"Fernando Alonso":[91,4.0],"Lance Stroll":[82,2.5],"Esteban Ocon":[86,3.2],"Oliver Bearman":[83,1.8],"Nico Hülkenberg":[86,3.0],"Gabriel Bortoleto":[82,1.6],"Pierre Gasly":[88,3.5],"Franco Colapinto":[80,1.4],"Sergio Pérez":[88,3.8],"Valtteri Bottas":[87,3.4]
 };
 const TEAM_BUDGET={mclaren:145,mercedes:140,redbull:142,ferrari:143,williams:85,racingbulls:78,astonmartin:105,haas:72,audi:95,alpine:82,cadillac:90};
+// Base técnica fictícia por equipe. Os projetos de P&D evoluem estes valores.
+const TEAM_BASE_CAR={
+ mclaren:{speed:87,cornering:88,stability:86,efficiency:85,tires:86},
+ mercedes:{speed:86,cornering:86,stability:88,efficiency:87,tires:86},
+ redbull:{speed:88,cornering:87,stability:85,efficiency:83,tires:84},
+ ferrari:{speed:87,cornering:88,stability:85,efficiency:84,tires:83},
+ williams:{speed:79,cornering:78,stability:79,efficiency:80,tires:78},
+ racingbulls:{speed:77,cornering:78,stability:77,efficiency:76,tires:77},
+ astonmartin:{speed:81,cornering:82,stability:81,efficiency:80,tires:79},
+ haas:{speed:77,cornering:76,stability:77,efficiency:77,tires:76},
+ audi:{speed:79,cornering:80,stability:79,efficiency:78,tires:79},
+ alpine:{speed:78,cornering:79,stability:77,efficiency:78,tires:77},
+ cadillac:{speed:76,cornering:76,stability:76,efficiency:76,tires:76}
+};
 const STORE="ftms_v05_career"; const OLD_STORE="ftms_v04_career"; const LEGACY_STORE="ftms_v03_career";
 let selectedId=null,career=null; const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'USD',maximumFractionDigits:1,notation:'compact'}).format(n*1e6);
 function team(id){return TEAMS.find(t=>t.id===id)}
 function toast(msg){const el=$("toast");el.textContent=msg;el.style.display="block";clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.style.display="none",2600)}
 function save(){try{localStorage.setItem(STORE,JSON.stringify(career));}catch(e){toast("Não foi possível salvar neste navegador.");}}
-function load(){try{career=JSON.parse(localStorage.getItem(STORE)||"null");if(!career){const old=JSON.parse(localStorage.getItem(OLD_STORE)||localStorage.getItem(LEGACY_STORE)||"null");if(old&&team(old.teamId)){career=old.contracts?old:makeCareer(old.teamId);career.contracts ||= makeCareer(old.teamId).contracts;career.cash ??= TEAM_BUDGET[old.teamId];career.month ||= 1;career.operatingCost ??= TEAM_BUDGET[old.teamId]*.055;career.sponsorIncome ??= TEAM_BUDGET[old.teamId]*.09;career.transactions ||= [];career.development ||= {aero:1,power:1,chassis:1,suspension:1};career.projectsDone ||= 0;career.activeProject ||= null;career.teamPoints ||= 0;career.raceHistory ||= [];save();}}}catch(e){career=null}}
-function makeCareer(id){const t=team(id);const contracts=t.drivers.map(d=>{const data=DRIVER_GAME_DATA[d[1]]||[80,2];return {number:d[0],name:d[1],nationality:d[2],rating:data[0],salary:data[1],years:2};});return {teamId:id,season:2026,createdAt:new Date().toISOString(),status:"Carreira iniciada",month:1,cash:TEAM_BUDGET[id],operatingCost:TEAM_BUDGET[id]*.055, sponsorIncome:TEAM_BUDGET[id]*.09,contracts,transactions:[{label:"Investimento inicial da equipe",amount:TEAM_BUDGET[id],type:"income",month:1}],development:{aero:1,power:1,chassis:1,suspension:1},projectsDone:0,activeProject:null,teamPoints:0,raceHistory:[]};}
+function load(){try{career=JSON.parse(localStorage.getItem(STORE)||"null");if(!career){const old=JSON.parse(localStorage.getItem(OLD_STORE)||localStorage.getItem(LEGACY_STORE)||"null");if(old&&team(old.teamId)){career=old.contracts?old:makeCareer(old.teamId);career.contracts ||= makeCareer(old.teamId).contracts;career.cash ??= TEAM_BUDGET[old.teamId];career.month ||= 1;career.operatingCost ??= TEAM_BUDGET[old.teamId]*.055;career.sponsorIncome ??= TEAM_BUDGET[old.teamId]*.09;career.transactions ||= [];career.development ||= {aero:1,power:1,chassis:1,suspension:1};career.developmentHistory ||= [];career.projectsDone ||= 0;career.activeProject ||= null;career.teamPoints ||= 0;career.raceHistory ||= [];career.developmentHistory ||= [];save();}}}catch(e){career=null}}
+function makeCareer(id){const t=team(id);const contracts=t.drivers.map(d=>{const data=DRIVER_GAME_DATA[d[1]]||[80,2];return {number:d[0],name:d[1],nationality:d[2],rating:data[0],salary:data[1],years:2};});return {teamId:id,season:2026,createdAt:new Date().toISOString(),status:"Carreira iniciada",month:1,cash:TEAM_BUDGET[id],operatingCost:TEAM_BUDGET[id]*.055, sponsorIncome:TEAM_BUDGET[id]*.09,contracts,transactions:[{label:"Investimento inicial da equipe",amount:TEAM_BUDGET[id],type:"income",month:1}],development:{aero:1,power:1,chassis:1,suspension:1},developmentHistory:[],projectsDone:0,activeProject:null,teamPoints:0,raceHistory:[]};}
 function renderTeams(){$("teamGrid").innerHTML=TEAMS.map(t=>`<article class="teamcard ${selectedId===t.id?'selected':''}" data-team="${t.id}" style="--team:${t.color}" tabindex="0" role="button" aria-pressed="${selectedId===t.id}" aria-label="Selecionar ${t.name}"><div class="teamstripe"></div><div class="teambody"><div class="teamtop"><div class="teamlogo">${t.abbr}</div><span class="muted" style="font-size:10px">2026</span></div><div class="teamname">${t.name}</div><div class="engine">UNIDADE DE POTÊNCIA · ${t.engine}</div><div class="drivers">${t.drivers.map(d=>`<div class="driverline"><span>${d[1]}</span><span>#${d[0]}</span></div>`).join("")}</div></div></article>`).join("");document.querySelectorAll("[data-team]").forEach(el=>{el.addEventListener("click",()=>selectTeam(el.dataset.team));el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectTeam(el.dataset.team)}})});$("takeTeamBtn").disabled=!selectedId;}
 function selectTeam(id){selectedId=id;renderTeams();toast(team(id).name+" selecionada.");}
 function startCareer(){if(!selectedId)return;if(career&&!confirm("Iniciar outra carreira? O progresso atual será substituído."))return;stopRaceTimer();race=null;career=makeCareer(selectedId);save();renderAll();showPage("overview");toast("Você assumiu a "+team(selectedId).name+"!");}
@@ -230,7 +265,25 @@ const DEV_PARTS={
 };
 function devLevel(key){return career?.development?.[key]||1;}
 function devCost(key){return +(DEV_PARTS[key].base*Math.pow(devLevel(key),1.55)).toFixed(1);}
-function carScore(){if(!career)return 0;return Math.min(100,Math.round(70+Object.values(career.development||{}).reduce((a,b)=>a+(b-1)*2.5,0)));}
+function clampStat(n){return Math.max(50,Math.min(100,Math.round(n)));}
+function carMetrics(levels=career?.development||{},teamId=career?.teamId){
+ const base=TEAM_BASE_CAR[teamId]||{speed:70,cornering:70,stability:70,efficiency:70,tires:70};
+ const lv={aero:1,power:1,chassis:1,suspension:1,...levels};
+ const stats={
+  speed:clampStat(base.speed+(lv.power-1)*4.0+(lv.aero-1)*0.8),
+  cornering:clampStat(base.cornering+(lv.aero-1)*4.0+(lv.suspension-1)*1.0),
+  stability:clampStat(base.stability+(lv.chassis-1)*4.0+(lv.suspension-1)*1.2),
+  efficiency:clampStat(base.efficiency+(lv.aero-1)*2.0+(lv.power-1)*1.0),
+  tires:clampStat(base.tires+(lv.suspension-1)*4.0+(lv.chassis-1)*1.0)
+ };
+ stats.overall=Math.round((stats.speed+stats.cornering+stats.stability+stats.efficiency+stats.tires)/5);
+ return stats;
+}
+function carScore(){return career?carMetrics().overall:0;}
+const METRIC_LABELS={speed:'Velocidade',cornering:'Curvas',stability:'Estabilidade',efficiency:'Eficiência',tires:'Gestão de pneus'};
+function metricCardsHTML(stats,compare=null){return Object.entries(METRIC_LABELS).map(([key,label])=>{const delta=compare?stats[key]-compare[key]:0;return `<div class="metric-card"><div class="metric-top"><span>${label}</span>${compare?`<span class="metric-delta">${delta>0?'+' : ''}${delta||'—'}</span>`:''}</div><div class="metric-value">${stats[key]}<small style="font-size:11px;color:var(--muted)">/100</small></div><div class="metric-track"><span style="width:${stats[key]}%"></span></div></div>`;}).join('');}
+function renderTelemetry(containerId,showHistory=false){const el=$(containerId);if(!el)return;if(!career){el.innerHTML='<div class="empty">Assuma uma equipe para visualizar os dados técnicos.</div>';return;}const current=carMetrics(),base=carMetrics({aero:1,power:1,chassis:1,suspension:1});const history=career.developmentHistory||[];el.innerHTML=`<div class="telemetry-head"><div><div class="eyebrow">CAR DATA / TELEMETRIA</div><h2>Pacote técnico atual · ${current.overall}/100</h2></div><span class="pill">${history.length} evolução(ões) registrada(s)</span></div><div class="telemetry-grid">${metricCardsHTML(current,base)}</div>${showHistory?`<div style="margin-top:18px"><div class="cardhead"><h2>HISTÓRICO DE DESENVOLVIMENTO</h2><span class="eyebrow">R&D LOG</span></div>${history.length?`<div class="history-list">${history.slice().reverse().slice(0,8).map(h=>`<div class="history-item"><div><strong>${h.name} · Nível ${h.level}</strong><small>Concluído no mês ${h.month}</small></div><span class="metric-delta">${h.before?.overall??'—'} → ${h.after?.overall??'—'} geral</span></div>`).join('')}</div>`:'<div class="empty">As melhorias concluídas aparecerão aqui.</div>'}</div>`:''}`;}
+
 function startDevelopment(key){
  if(!career){toast("Inicie uma carreira antes de desenvolver o carro.");return false;}
  const part=DEV_PARTS[key];
@@ -253,10 +306,12 @@ function startDevelopment(key){
  toast(`${part.name}: projeto iniciado. Investimento de ${money(cost)} registrado.`);
  return true;
 }
-function renderDevelopment(t){const content=$("developmentContent");if(!t){content.innerHTML='<div class="empty">Assuma uma equipe para acessar a engenharia.</div>';$('carRating').textContent=$('projectsDone').textContent=$('nextProjectCost').textContent=$('devCash').textContent='—';$('activeProject').innerHTML='<strong>Nenhum projeto em andamento</strong><p class="muted">Assuma uma equipe para começar a desenvolver o carro.</p>';return;}
+function renderDevelopment(t){const content=$("developmentContent");if(!t){content.innerHTML='<div class="empty">Assuma uma equipe para acessar a engenharia.</div>';$('carRating').textContent=$('projectsDone').textContent=$('nextProjectCost').textContent=$('devCash').textContent='—';$('activeProject').innerHTML='<strong>Nenhum projeto em andamento</strong><p class="muted">Assuma uma equipe para começar a desenvolver o carro.</p>';renderTelemetry('developmentTelemetry');renderDevelopmentHistory();return;}
  $('carRating').textContent=carScore()+"/100";$('projectsDone').textContent=career.projectsDone||0;$('devCash').textContent=money(career.cash);const costs=Object.keys(DEV_PARTS).filter(k=>devLevel(k)<5).map(devCost);$('nextProjectCost').textContent=costs.length?money(Math.min(...costs)):"Nível máximo";
  const active=career.activeProject;$('activeProject').innerHTML=active?`<div class="eyebrow">PROJETO EM ANDAMENTO · MÊS ${active.startedMonth}</div><h3>${active.name} · Nível ${active.targetLevel}</h3><p class="muted">Investimento de ${money(active.cost)}. Feche o mês para concluir e instalar a melhoria.</p><div class="devbar"><span style="width:55%"></span></div><small class="muted">Desenvolvimento em andamento</small>`:'<div class="eyebrow">CENTRO DE ENGENHARIA</div><strong>Nenhum projeto em andamento</strong><p class="muted">Selecione uma área para iniciar uma melhoria. O custo será debitado imediatamente.</p>';
- content.innerHTML=Object.entries(DEV_PARTS).map(([key,p])=>{const level=devLevel(key),cost=devCost(key),max=level>=5,activeKey=active?.key===key;return `<article class="card devcard"><div class="devtop"><div class="devicon">${p.icon}</div><div class="devlevel">NÍVEL ${level}/5</div></div><h3>${p.name}</h3><p>${p.desc}</p><div class="devbar"><span style="width:${level*20}%"></span></div><div class="devmeta"><span>${p.stat}</span><strong>${level*20}%</strong></div><div class="actionrow" style="margin-top:15px"><button type="button" class="btn primary" data-upgrade="${key}" ${max||active?'disabled':''}>${max?'Nível máximo':activeKey?'Projeto ativo':active?'Outro projeto ativo':'Desenvolver · '+money(cost)}</button></div></article>`}).join('');}
+ content.innerHTML=Object.entries(DEV_PARTS).map(([key,p])=>{const level=devLevel(key),cost=devCost(key),max=level>=5,activeKey=active?.key===key;const metricImpact={aero:'Curvas + eficiência',power:'Velocidade em retas',chassis:'Estabilidade geral',suspension:'Pneus + tração'}[key];return `<article class="card devcard"><div class="devtop"><div class="devicon">${p.icon}</div><div class="devlevel">NÍVEL ${level}/5</div></div><h3>${p.name}</h3><p>${p.desc}</p><div class="devbar"><span style="width:${level*20}%"></span></div><div class="devmeta"><span>${metricImpact}</span><strong>${level*20}%</strong></div><div class="actionrow" style="margin-top:15px"><button type="button" class="btn primary" data-upgrade="${key}" ${max||active?'disabled':''}>${max?'Nível máximo':activeKey?'Projeto ativo':active?'Outro projeto ativo':'Desenvolver · '+money(cost)}</button></div></article>`}).join('');renderTelemetry('developmentTelemetry');renderDevelopmentHistory();}
+
+function renderDevelopmentHistory(){const el=$('developmentHistoryPanel');if(!el)return;const history=career?.developmentHistory||[];el.innerHTML=`<div class="cardhead"><h2>HISTÓRICO DE EVOLUÇÃO</h2><span class="eyebrow">R&D LOG</span></div>${history.length?`<div class="history-list">${history.slice().reverse().map(h=>`<div class="history-item"><div><strong>${h.name} · Nível ${h.level}</strong><small>Concluído no mês ${h.month}</small></div><span class="metric-delta">${h.before?.overall??'—'} → ${h.after?.overall??'—'} geral</span></div>`).join('')}</div>`:'<div class="empty">As melhorias concluídas aparecerão aqui.</div>'}`;}
 
 // --- Race Simulation 0.6: 2D top-down, strategy-driven hybrid mode ---
 const RACE_LAPS=12, RACE_LAP_MS=24000;
@@ -288,10 +343,17 @@ function createRace(){if(!career){toast('Assuma uma equipe antes de iniciar uma 
 function stopRaceTimer(){if(raceTimer){clearInterval(raceTimer);raceTimer=null;}}
 function startRace(){if(!race)createRace();if(!race||race.finished)return;if(!race.running){race.running=true;raceLastTick=performance.now();raceTimer=setInterval(tickRace,100);$('raceStartBtn').disabled=true;$('racePauseBtn').disabled=false;$('raceStatus').textContent='CORRIDA EM ANDAMENTO';raceMessage('Largada! Acompanhe o ritmo e monitore os pneus.');}}
 function pauseRace(){if(!race||!race.running)return;race.running=false;stopRaceTimer();$('raceStartBtn').disabled=false;$('raceStartBtn').textContent='▶ Retomar corrida';$('racePauseBtn').disabled=true;$('raceStatus').textContent='CORRIDA PAUSADA';raceMessage('Simulação pausada. Ajuste sua estratégia antes de retomar.');}
+function raceCarTechnicalFactor(car){
+ const stats=car.teamId===career?.teamId?carMetrics():carMetrics({aero:1,power:1,chassis:1,suspension:1},car.teamId);
+ const segment=Math.floor((((car.progress%1)+1)%1)*TRACK_POINTS.length);
+ const straight=[0,2,3,5,7,9,11,13].includes(segment);
+ const factor=straight?1+(stats.speed-82)*0.00072+(stats.efficiency-82)*0.00012:1+(stats.cornering-82)*0.00062+(stats.stability-82)*0.00022;
+ return {factor:Math.max(.94,Math.min(1.06,factor)),tireFactor:Math.max(.88,Math.min(1.08,1-(stats.tires-82)*0.0022)),fuelFactor:Math.max(.90,Math.min(1.08,1-(stats.efficiency-82)*0.0018))};
+}
 function tickRace(){if(!race||!race.running)return;const now=performance.now(),dt=Math.min(250,now-raceLastTick)*raceSpeed;raceLastTick=now;race.elapsed+=dt;
  race.cars.forEach(car=>{if(car.finished)return;if(car.pitTimer>0){car.pitTimer-=dt;if(car.pitTimer<=0){car.pitTimer=0;car.wear=.035;car.fuel=Math.min(100,car.fuel+28);car.tire=car.nextTire||'medium';car.nextTire=null;raceMessage(`${car.name} voltou à pista com pneus ${tireName(car.tire).toLowerCase()}.`);}return;}
- const paceFactor=car.pace==='push'?1.045:car.pace==='conservative' ? .965 : 1;const tireFactor=car.tire==='soft'?1.035:car.tire==='hard'?.982:1;const wearPenalty=1-Math.max(0,car.wear-.25)*.16;const carFactor=.965+(car.rating/100)*.065+(car.teamId===career.teamId?(carScore()-70)*.0007:0);const variation=1+Math.sin(race.elapsed/3700+car.grid*1.7)*.004;const fuelPenalty=.98+car.fuel*.0002;const speed=paceFactor*tireFactor*wearPenalty*carFactor*variation*fuelPenalty;
- const oldLap=Math.floor(car.progress);car.progress+=dt/RACE_LAP_MS*speed;const newLap=Math.floor(car.progress);const lapsDone=Math.max(0,newLap-oldLap);car.wear=Math.min(1,car.wear+dt/RACE_LAP_MS*(car.tire==='soft' ? .105 : car.tire==='hard' ? .045 : .068));car.fuel=Math.max(0,car.fuel-dt/RACE_LAP_MS*5.2);
+ const paceFactor=car.pace==='push'?1.045:car.pace==='conservative' ? .965 : 1;const tireFactor=car.tire==='soft'?1.035:car.tire==='hard'?.982:1;const wearPenalty=1-Math.max(0,car.wear-.25)*.16;const technical=raceCarTechnicalFactor(car);const driverFactor=.965+(car.rating/100)*.065;const carFactor=driverFactor*technical.factor;const variation=1+Math.sin(race.elapsed/3700+car.grid*1.7)*.004;const fuelPenalty=.98+car.fuel*.0002;const speed=paceFactor*tireFactor*wearPenalty*carFactor*variation*fuelPenalty;
+ const oldLap=Math.floor(car.progress);car.progress+=dt/RACE_LAP_MS*speed;const newLap=Math.floor(car.progress);const lapsDone=Math.max(0,newLap-oldLap);car.wear=Math.min(1,car.wear+dt/RACE_LAP_MS*(car.tire==='soft' ? .105 : car.tire==='hard' ? .045 : .068)*technical.tireFactor);car.fuel=Math.max(0,car.fuel-dt/RACE_LAP_MS*5.2*technical.fuelFactor);
  if(car.pitRequested&&newLap>oldLap){car.pitRequested=false;car.pitTimer=4200;car.pitStops++;car.nextTire=car.requestedTire||'medium';car.requestedTire=null;raceMessage(`${car.name} entrou nos boxes para trocar pneus.`);}
  if(car.progress>=RACE_LAPS){car.finished=true;car.finishTime=race.elapsed;}
  });
@@ -305,9 +367,10 @@ function renderRace(){if(!race)return;const cars=[...race.cars].sort((a,b)=>b.pr
 function formatRaceTime(ms){const s=Math.floor(ms/1000);return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
 function finishRace(){race.running=false;race.finished=true;stopRaceTimer();const cars=[...race.cars].sort((a,b)=>a.finishTime-b.finishTime);const own=cars.filter(c=>c.teamId===career.teamId);const points=[25,18,15,12,10,8,6,4,2,1];let earned=0;own.forEach(c=>{const pos=cars.indexOf(c);earned+=points[pos]||0;});career.teamPoints=(career.teamPoints||0)+earned;const result={month:career.month,positions:own.map(c=>({name:c.name,position:cars.indexOf(c)+1})),points:earned,elapsed:race.elapsed};career.raceHistory=career.raceHistory||[];career.raceHistory.unshift(result);career.raceHistory=career.raceHistory.slice(0,10);save();$('raceStartBtn').disabled=true;$('racePauseBtn').disabled=true;$('raceStatus').textContent='BANDEIRADA';$('raceRunning').textContent='0';$('raceBestResult').textContent=own.length?`P${Math.min(...own.map(c=>cars.indexOf(c)+1))}`:'—';$('raceResult').style.display='block';$('raceResult').innerHTML=`<strong>🏁 Corrida finalizada</strong><p>Seus pilotos terminaram em ${own.map(c=>`${c.name}: P${cars.indexOf(c)+1}`).join(' · ')}.</p><p>Pontos conquistados nesta prova: <strong>${earned}</strong> · Total da equipe: <strong>${career.teamPoints}</strong>.</p>`;raceMessage('Bandeirada! Resultado registrado na carreira.');renderRace();}
 
-function closeMonth(){if(!career)return;const p=payroll(),op=career.operatingCost,inc=career.sponsorIncome,net=inc-p-op;if(career.cash+net<0){toast("Saldo insuficiente para fechar o mês. Ajuste os contratos em uma atualização futura.");return;}career.cash=+(career.cash+net).toFixed(2);career.month++;if(career.activeProject){const project=career.activeProject;career.development[project.key]=project.targetLevel;career.projectsDone=(career.projectsDone||0)+1;career.transactions.unshift({label:`Projeto concluído: ${project.name} nível ${project.targetLevel}`,amount:0,type:"info",month:career.month-1});career.activeProject=null;}career.transactions.unshift({label:`Folha salarial · mês ${career.month-1}`,amount:-p,type:'expense',month:career.month-1},{label:`Custos operacionais · mês ${career.month-1}`,amount:-op,type:'expense',month:career.month-1},{label:`Receita de patrocinadores · mês ${career.month-1}`,amount:inc,type:'income',month:career.month-1});career.transactions=career.transactions.slice(0,30);save();renderAll();toast("Mês fechado. Caixa atualizado.");}
+function closeMonth(){if(!career)return;const p=payroll(),op=career.operatingCost,inc=career.sponsorIncome,net=inc-p-op;if(career.cash+net<0){toast("Saldo insuficiente para fechar o mês. Ajuste os contratos em uma atualização futura.");return;}career.cash=+(career.cash+net).toFixed(2);career.month++;if(career.activeProject){const project=career.activeProject;const before=carMetrics();career.development[project.key]=project.targetLevel;const after=carMetrics();career.developmentHistory=Array.isArray(career.developmentHistory)?career.developmentHistory:[];career.developmentHistory.push({key:project.key,name:project.name,level:project.targetLevel,month:career.month-1,before,after});career.developmentHistory=career.developmentHistory.slice(-40);career.projectsDone=(career.projectsDone||0)+1;career.transactions.unshift({label:`Projeto concluído: ${project.name} nível ${project.targetLevel}`,amount:0,type:"info",month:career.month-1});career.activeProject=null;}career.transactions.unshift({label:`Folha salarial · mês ${career.month-1}`,amount:-p,type:'expense',month:career.month-1},{label:`Custos operacionais · mês ${career.month-1}`,amount:-op,type:'expense',month:career.month-1},{label:`Receita de patrocinadores · mês ${career.month-1}`,amount:inc,type:'income',month:career.month-1});career.transactions=career.transactions.slice(0,30);save();renderAll();toast("Mês fechado. Caixa atualizado.");}
 function renderFinance(t){if(!t){$("cashValue").textContent=$("payrollValue").textContent=$("operatingValue").textContent="—";$("financeSummary").textContent="Assuma uma equipe para visualizar o financeiro.";$("transactions").textContent="Nenhuma movimentação.";return;}const p=payroll(),net=career.sponsorIncome-p-career.operatingCost;$("cashValue").textContent=money(career.cash);$("payrollValue").textContent=money(p);$("operatingValue").textContent=money(career.operatingCost);$("monthLabel").textContent=`Mês ${career.month}`;$("financeSummary").innerHTML=`<p>Receita de patrocinadores: <strong class="positive">+${money(career.sponsorIncome)}</strong></p><p>Folha salarial: <strong class="negative">−${money(p)}</strong></p><p>Custos operacionais: <strong class="negative">−${money(career.operatingCost)}</strong></p><hr style="border-color:var(--line)"><p>Resultado previsto do mês: <strong class="${net>=0?'positive':'negative'}">${net>=0?'+':'−'}${money(Math.abs(net))}</strong></p>`;$("transactions").innerHTML=career.transactions.length?`<div class="tablewrap"><table><thead><tr><th>MÊS</th><th>MOVIMENTAÇÃO</th><th>VALOR</th></tr></thead><tbody>${career.transactions.map(x=>`<tr><td>${x.month}</td><td>${x.label}</td><td class="${x.type==='income'?'positive':x.type==='expense'?'negative':''}">${x.type==='info'?'Info':(x.amount>0?'+':'')+money(x.amount)}</td></tr>`).join('')}</tbody></table></div>`:'Nenhuma movimentação.';}
-function renderAll(){const t=career?team(career.teamId):null;$("sideTeam").textContent=t?t.name:"Nenhuma equipe";$("sideStatus").textContent=career?`Temporada 2026 · Mês ${career.month}`:"Carreira não iniciada";$("statTeam").textContent=t?t.name:"—";$("statDrivers").textContent=t?"02":"—";$("statStatus").textContent=career?"Em andamento":"Não iniciada";$("nextStep").className=t?"":"empty";$("nextStep").innerHTML=t?`<strong>${t.name} está sob seu comando.</strong><p class="muted">Caixa disponível: ${money(career.cash)}. Gerencie os contratos, desenvolva o carro e prepare sua equipe para as corridas. Pontos: ${career.teamPoints||0}.</p><button class="btn" data-goto="finance">Abrir financeiro →</button>`:"Selecione uma equipe para assumir o comando e iniciar sua carreira.";$("nextStep").querySelector("[data-goto]")?.addEventListener("click",()=>showPage("finance"));$("garageContent").style.setProperty("--team",t?t.color:"#55c7df");if(!t){$("garageContent").className="empty";$("garageContent").textContent="Você ainda não assumiu uma equipe.";}else{$("garageContent").className="";$("garageContent").innerHTML=`<div class="selectedhero" style="--team:${t.color}"><div class="heroaccent"></div><div class="heroinside"><div><div class="eyebrow">ESCUDERIA / TEMPORADA 2026</div><h2>${t.full}</h2><p>Unidade de potência: ${t.engine}</p></div><div class="heroabbr">${t.abbr}</div></div></div><div class="grid drivercards">${career.contracts.map(d=>`<div class="card drivercard" style="--team:${t.color}"><div class="number">#${d.number}</div><div><h3>${d.name}</h3><p>${d.nationality} · Nota ${d.rating}/100</p><div class="contract-meta">Contrato: ${d.years} ano(s) · ${money(d.salary)}/ano</div></div></div>`).join("")}</div>`;}renderContracts(t);renderFinance(t);renderDevelopment(t);$("advanceMonthBtn").disabled=!t;}
+function renderAll(){const t=career?team(career.teamId):null;$("sideTeam").textContent=t?t.name:"Nenhuma equipe";$("sideStatus").textContent=career?`Temporada 2026 · Mês ${career.month}`:"Carreira não iniciada";$("statTeam").textContent=t?t.name:"—";$("statDrivers").textContent=t?"02":"—";$("statStatus").textContent=career?"Em andamento":"Não iniciada";$("nextStep").className=t?"":"empty";$("nextStep").innerHTML=t?`<strong>${t.name} está sob seu comando.</strong><p class="muted">Caixa disponível: ${money(career.cash)}. Gerencie os contratos, desenvolva o carro e prepare sua equipe para as corridas. Pontos: ${career.teamPoints||0}.</p><button class="btn" data-goto="finance">Abrir financeiro →</button>`:"Selecione uma equipe para assumir o comando e iniciar sua carreira.";$("nextStep").querySelector("[data-goto]")?.addEventListener("click",()=>showPage("finance"));$("garageContent").style.setProperty("--team",t?t.color:"#55c7df");if(!t){$("garageContent").className="empty";$("garageContent").textContent="Você ainda não assumiu uma equipe.";}else{$("garageContent").className="";$("garageContent").innerHTML=`<div class="selectedhero" style="--team:${t.color}"><div class="heroaccent"></div><div class="heroinside"><div><div class="eyebrow">ESCUDERIA / TEMPORADA 2026</div><h2>${t.full}</h2><p>Unidade de potência: ${t.engine}</p></div><div class="heroabbr">${t.abbr}</div></div></div><div class="grid drivercards">${career.contracts.map(d=>`<div class="card drivercard" style="--team:${t.color}"><div class="number">#${d.number}</div><div><h3>${d.name}</h3><p>${d.nationality} · Nota ${d.rating}/100</p><div class="contract-meta">Contrato: ${d.years} ano(s) · ${money(d.salary)}/ano</div></div></div>`).join("")}</div><div class="card" style="margin-top:16px"><div class="telemetry-head"><div><div class="eyebrow">CAR PERFORMANCE</div><h2>Desempenho técnico do monoposto</h2></div><span class="pill">${carScore()}/100 geral</span></div><div class="telemetry-grid">${metricCardsHTML(carMetrics(),carMetrics({aero:1,power:1,chassis:1,suspension:1}))}</div><div style="margin-top:18px"><div class="cardhead"><h2>ÚLTIMAS EVOLUÇÕES</h2><button class="btn" data-goto="development">Abrir engenharia →</button></div>${career.developmentHistory?.length?`<div class="history-list">${career.developmentHistory.slice().reverse().slice(0,4).map(h=>`<div class="history-item"><div><strong>${h.name} · Nível ${h.level}</strong><small>Mês ${h.month}</small></div><span class="metric-delta">${h.before?.overall??'—'} → ${h.after?.overall??'—'}</span></div>`).join('')}</div>`:'<div class="empty">Nenhuma melhoria concluída ainda.</div>'}</div></div>`;}renderContracts(t);renderFinance(t);renderDevelopment(t);$("advanceMonthBtn").disabled=!t;}
+$('garageContent').addEventListener('click',event=>{const target=event.target.closest('[data-goto]');if(target)showPage(target.dataset.goto);});
 // Delegação persistente: os cartões são recriados em cada render, então o clique
 // é tratado no contêiner estável e não depende de listeners em botões dinâmicos.
 $("developmentContent").addEventListener("click",event=>{
@@ -328,7 +391,7 @@ $('raceDriverSelect').addEventListener('change',()=>{if(race){const car=selected
 $('racePaceSelect').addEventListener('change',applyPace);
 $('pitCallBtn').addEventListener('click',callPit);
 
-load();if(career&&team(career.teamId)){selectedId=career.teamId;career.contracts ||= makeCareer(career.teamId).contracts;career.month ||= 1;career.cash ??= TEAM_BUDGET[career.teamId];career.operatingCost ??= TEAM_BUDGET[career.teamId]*.055;career.sponsorIncome ??= TEAM_BUDGET[career.teamId]*.09;career.transactions ||= [];career.development ||= {aero:1,power:1,chassis:1,suspension:1};career.projectsDone ||= 0;career.activeProject ||= null;career.teamPoints ||= 0;career.raceHistory ||= [];}else career=null;renderAll();renderTeams();
+load();if(career&&team(career.teamId)){selectedId=career.teamId;career.contracts ||= makeCareer(career.teamId).contracts;career.month ||= 1;career.cash ??= TEAM_BUDGET[career.teamId];career.operatingCost ??= TEAM_BUDGET[career.teamId]*.055;career.sponsorIncome ??= TEAM_BUDGET[career.teamId]*.09;career.transactions ||= [];career.development ||= {aero:1,power:1,chassis:1,suspension:1};career.developmentHistory ||= [];career.projectsDone ||= 0;career.activeProject ||= null;career.teamPoints ||= 0;career.raceHistory ||= [];career.developmentHistory ||= [];}else career=null;renderAll();renderTeams();
 </script>
 </body>
 </html>
