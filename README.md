@@ -1,30 +1,26 @@
-# F1 Team Manager Simulator v0.3
+# F1 Team Manager Simulator v0.4
 
-## Como executar
-1. Extraia o arquivo ZIP.
-2. Abra a pasta `F1-Team-Manager-Simulator-v0.3`.
-3. Abra `index.html` no Chrome ou Edge.
+## Executar
+Extraia o ZIP e abra `index.html` no Chrome ou Edge. Não precisa de instalação ou servidor local.
 
-Não precisa instalar nada nem usar Live Server.
+## Novidades da 0.4
+- Gestão financeira com caixa inicial por equipe.
+- Receita mensal simulada de patrocinadores.
+- Folha salarial mensal dos pilotos.
+- Custos operacionais mensais.
+- Fechamento de mês com atualização do caixa e histórico de transações.
+- Contratos de pilotos com duração e salários anuais.
+- Renovação de contrato por mais um ano, com aumento salarial de 10%.
+- Migração automática de uma carreira salva pela versão 0.3 quando disponível no mesmo navegador.
+- Salvamento local automático.
 
-## O que há nesta versão
-- 11 equipes da temporada 2026 e 22 pilotos titulares.
-- Seleção de equipe por cartão.
-- Início de carreira.
-- Tela Minha equipe com dupla de pilotos e unidade de potência.
-- Navegação funcional entre Visão geral, Equipes 2026, Minha equipe, Desenvolvimento e Calendário.
-- Salvamento local da equipe escolhida via localStorage.
-- Reinício de carreira com confirmação.
+## Observações
+- Orçamentos, salários, receitas e custos são valores fictícios de gameplay, não dados financeiros oficiais das equipes ou contratos reais dos pilotos.
+- O fechamento de mês é uma ação manual. O jogo não avança o calendário automaticamente.
+- Desenvolvimento do carro e simulação de corrida ainda não estão implementados.
+- Dados são salvos no armazenamento local do navegador e dispositivo.
 
-## Limitações conhecidas
-- Desenvolvimento e calendário são telas estruturais, ainda sem sistemas de jogo.
-- Não há simulação de corrida, economia, contratação ou evolução de peças nesta versão.
-- O salvamento fica no navegador e dispositivo usados.
-- Esta versão foi reconstruída como HTML independente porque o fonte anterior não estava disponível nesta conversa.
-
-## Próximas etapas
-1. Testar todos os botões e o salvamento.
-2. Implementar orçamento e contratos.
-3. Implementar desenvolvimento do carro.
-4. Criar a simulação de corrida 2D.
-5. Adicionar criação de equipe própria em versão futura.
+## Próximas etapas sugeridas
+- v0.5: desenvolvimento do carro, peças e atributos técnicos.
+- v0.6: estratégia e preparação de corrida.
+- v0.7: simulação 2D.
