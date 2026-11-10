@@ -1,140 +1,94 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b1018">
-  <title>F1 Team Manager Simulator</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1018">
+<title>F1 Team Manager Simulator</title>
+<style>
+:root{--bg:#0b1018;--panel:#121c29;--panel2:#172333;--line:#29384a;--text:#edf2f8;--muted:#91a0b2;--red:#e3424d;--green:#55c69c;--blue:#62a7df;font-family:Inter,Segoe UI,Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-size:14px}button{font:inherit;cursor:pointer}button:focus-visible{outline:2px solid #fff;outline-offset:3px}.shell{min-height:100vh;display:grid;grid-template-columns:245px 1fr}.sidebar{background:#0e151f;border-right:1px solid var(--line);padding:24px 16px;display:flex;flex-direction:column;min-height:100vh}.brand{display:flex;align-items:center;gap:11px;padding:0 7px 30px}.mark{width:39px;height:39px;background:var(--red);display:grid;place-items:center;font-weight:900;font-size:18px;clip-path:polygon(0 0,100% 0,82% 100%,0 100%)}.brand strong{display:block;font-size:12px;letter-spacing:1px}.brand small{font-size:9px;letter-spacing:2px;color:var(--muted)}.season{padding:0 11px 12px;color:var(--muted);font-size:10px;letter-spacing:1.3px}.season b{color:white}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#9ba9ba;text-align:left;padding:13px;border-radius:6px;font-size:12px;font-weight:650}.nav button:hover{background:#192635;color:white}.nav button.active{background:#28212a;color:white;box-shadow:inset 3px 0 var(--red)}.nav .ico{display:inline-block;width:25px;color:#a9b8c8;font-size:16px}.sidebottom{margin-top:auto}.save{font-size:10px;color:var(--muted);padding:15px 10px}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:7px}.profile{border-top:1px solid var(--line);padding:17px 7px 0;display:flex;gap:10px;align-items:center}.avatar{width:35px;height:35px;border-radius:50%;background:#293d52;display:grid;place-items:center;font-weight:800}.profile strong{font-size:10px}.profile small{display:block;color:var(--muted);font-size:9px;margin-top:4px}.main{min-width:0}.topbar{height:67px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:#0e151f}.crumb{font-size:9px;letter-spacing:1.4px;color:var(--muted)}.crumb b{padding:0 9px;color:#455466}.crumb strong{color:#e7edf5}.budget-label{font-size:8px;color:var(--muted);letter-spacing:1px}.budget-value{font-weight:750;font-size:12px;margin-top:4px}.content{max-width:1450px;margin:auto;padding:38px 38px 60px}.eyebrow{font-size:9px;font-weight:800;letter-spacing:1.8px;color:#91a2b5}.heading h1{font-size:clamp(36px,4vw,53px);line-height:.98;margin:10px 0;font-weight:900;letter-spacing:-1.5px}.heading h1 em{font-style:normal;color:var(--red)}.muted{color:var(--muted);font-size:12px;line-height:1.65}.setup-panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:9px}.setup-panel{padding:24px;margin-top:26px}.panel-head,.section-head,.title-row{display:flex;align-items:center;justify-content:space-between;gap:15px}.panel-head h2,.section-head h2{font-size:23px;margin:6px 0 0}.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}.team-choice{min-height:132px;text-align:left;background:#152131;color:white;border:1px solid #304155;border-radius:7px;padding:15px;transition:.18s}.team-choice:hover{transform:translateY(-2px);border-color:#8395a9}.team-choice.selected{border-color:var(--red);box-shadow:inset 0 0 0 1px #e3424d66;background:#241e28}.team-choice strong{font-size:13px}.team-choice small{display:block;color:var(--muted);font-size:10px;margin-top:9px}.team-choice .swatch{display:inline-block;width:9px;height:25px;vertical-align:middle;margin-right:9px;border-radius:2px}.team-choice .money{display:flex;justify-content:space-between;border-top:1px solid #304155;padding-top:11px;margin-top:12px;font-size:9px;color:#aab7c5}.team-choice .money b{color:white}.setup-foot{border-top:1px solid var(--line);padding-top:18px;display:flex;justify-content:space-between;align-items:center;gap:15px}.setup-foot strong{display:block;margin-top:5px;font-size:13px}.primary,.secondary,.danger{border:0;border-radius:4px;padding:12px 17px;font-size:9px;font-weight:850;letter-spacing:1px}.primary{background:var(--red);color:white}.primary:hover:not(:disabled){background:#f0525d}.primary:disabled{opacity:.4;cursor:not-allowed}.secondary{background:#26384b;color:#e7eef6;border:1px solid #40536a}.danger{background:#3a2028;color:#ff9da4;border:1px solid #8e3b44}.hidden{display:none!important}.page{display:none}.page.active{display:block}.title-row{margin-bottom:23px}.title-row h1{font-size:42px;margin:8px 0}.title-row p{margin:0}.team-tag{background:#182637;border:1px solid var(--line);padding:10px 13px;border-radius:5px;font-size:11px;display:flex;align-items:center;gap:9px}.team-tag i{height:22px;width:7px;border-radius:2px;background:var(--red)}.hero{position:relative;overflow:hidden;min-height:195px;padding:27px 29px;border:1px solid #34495f;border-radius:9px;background:linear-gradient(110deg,#192a3d,#152131 65%,#202c3b);display:flex;align-items:center}.hero h2{font-size:31px;margin:8px 0 3px}.hero p{font-size:11px;color:#aebdcb;margin:0}.hero .track{position:absolute;right:15%;width:245px;height:135px;border:13px solid #8193a6;border-radius:42% 32% 45% 35%;transform:rotate(-17deg);opacity:.45}.hero .track:after{content:"";position:absolute;inset:7px;border:1px dashed white;border-radius:inherit}.hero .go{position:absolute;right:25px;bottom:22px;background:#17283a;border:1px solid #6c8299;color:white;padding:10px 13px;font-size:8px;letter-spacing:1px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}.stat{position:relative;overflow:hidden;padding:17px;background:var(--panel);border:1px solid var(--line);border-radius:7px;min-height:106px}.stat span{font-size:8px;color:var(--muted);letter-spacing:1px;font-weight:800}.stat strong{display:block;font-size:24px;margin:10px 0 3px}.stat small{font-size:9px;color:var(--muted)}.columns{display:grid;grid-template-columns:1fr 1fr;gap:13px}.card{padding:19px}.card h3{font-size:20px;margin:5px 0 0}.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.linkbtn{border:0;background:none;color:#ff7b83;font-size:8px;font-weight:800;letter-spacing:1px}.driver-row{display:flex;align-items:center;gap:11px;border-top:1px solid var(--line);padding:12px 0}.driver-no{font-size:19px;color:#71859a;font-weight:800}.driver-avatar{width:34px;height:34px;border-radius:50%;background:#2a3e53;display:grid;place-items:center;font-weight:800;font-size:11px}.driver-info{flex:1}.driver-info strong{font-size:11px}.driver-info small{display:block;color:var(--muted);font-size:9px;margin-top:4px}.rating{text-align:right;font-size:18px;font-weight:800}.rating small{display:block;font-size:8px;color:var(--muted)}.perf{display:grid;grid-template-columns:115px 1fr 25px;gap:9px;align-items:center;margin:14px 0}.perf span{font-size:9px;color:#aeb9c6}.bar{height:5px;background:#29384a;border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#a92e3a,#f06b74)}.perf b{font-size:11px;text-align:right}.team-profile{display:flex;align-items:center;gap:17px;padding:23px;background:linear-gradient(110deg,#1b2b3d,#121c29);border:1px solid var(--line);border-radius:8px;margin-bottom:27px}.accent{width:7px;height:67px;border-radius:4px}.team-profile h2{margin:5px 0;font-size:27px}.team-profile p{margin:0;color:var(--muted);font-size:10px}.driver-cards{display:grid;grid-template-columns:1fr 1fr;gap:13px}.driver-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:19px}.driver-card-top{display:flex;justify-content:space-between}.driver-card h3{font-size:22px;margin:7px 0 3px}.driver-card p{font-size:10px;color:var(--muted);margin:0}.big-rating{font-size:28px;font-weight:850}.traits{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}.trait{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:8px;font-size:9px;color:var(--muted)}.trait b{color:white}.calendar-list{display:grid}.calendar-row{display:grid;grid-template-columns:40px 1fr auto;gap:13px;align-items:center;padding:13px 0;border-top:1px solid var(--line)}.round{font-size:19px;font-weight:850;color:#73869b}.calendar-row strong{font-size:11px}.calendar-row small{display:block;font-size:9px;color:var(--muted);margin-top:4px}.calendar-row time{font-size:9px;color:#b5c0cd}.racebox{display:grid;grid-template-columns:1fr 1fr;overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:9px;min-height:245px}.trackbox{display:grid;place-items:center;position:relative;background:radial-gradient(ellipse,#26384a,#101721)}.mini-track{width:205px;height:125px;border:17px solid #75889c;border-radius:42% 32% 43% 38%;transform:rotate(-15deg);position:relative}.mini-track:after{content:"";position:absolute;inset:5px;border:1px dashed white;border-radius:inherit}.trackbox small{position:absolute;bottom:14px;font-size:8px;letter-spacing:1px;color:#9cacbd}.racecopy{padding:30px;align-self:center}.racecopy h2{font-size:24px;margin:8px 0}.racecopy p{font-size:11px;color:var(--muted);line-height:1.7}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:13px}.feature{padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:7px}.feature b{color:var(--red);font-size:17px}.feature strong{display:block;font-size:11px;margin:8px 0}.feature small{font-size:9px;color:var(--muted);line-height:1.5}.car-card{min-height:300px;background:radial-gradient(ellipse at center,#26384a,#111a26 70%);display:grid;place-items:center}.car-illustration{position:relative;width:270px;height:150px;transform:rotate(90deg)}.carbody{position:absolute;left:25%;top:38%;width:50%;height:25%;background:#e34652;clip-path:polygon(0 25%,20% 0,80% 0,100% 25%,87% 100%,13% 100%)}.nose{position:absolute;left:46%;top:8%;width:8%;height:38%;background:#ef5963;clip-path:polygon(30% 0,70% 0,100% 100%,0 100%)}.wheel{position:absolute;width:12%;height:23%;background:#080b10;border:3px solid #566473;border-radius:5px}.w1{left:19%;top:29%}.w2{right:19%;top:29%}.w3{left:19%;top:59%}.w4{right:19%;top:59%}.wing{position:absolute;left:31%;width:38%;height:6px;background:#cbd6e0}.wing.front{top:4%}.wing.rear{top:68%}.notice{border-top:1px solid var(--line);margin-top:18px;padding-top:14px;color:var(--muted);font-size:10px;line-height:1.6}.toast{position:fixed;right:20px;bottom:20px;background:#1c2d3e;border:1px solid #49627a;padding:13px 17px;border-radius:6px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:30;font-size:11px}.toast.show{opacity:1;transform:translateY(0)}.modal{position:fixed;inset:0;background:#03070dcc;display:grid;place-items:center;padding:18px;z-index:20}.modal-card{width:min(100%,450px);padding:25px;background:#152131;border:1px solid var(--line);border-radius:9px;position:relative}.modal-card h2{margin:8px 0}.modal-card p{font-size:11px;color:var(--muted)}.close{position:absolute;right:13px;top:10px;border:0;background:none;color:white;font-size:24px}.setting-row{border-top:1px solid var(--line);margin-top:20px;padding-top:17px;display:flex;align-items:center;justify-content:space-between;gap:15px}.setting-row small{display:block;color:var(--muted);font-size:9px;margin-top:5px}.disclaimer{font-size:9px;color:#728196;margin-top:14px}
+@media(max-width:900px){.shell{grid-template-columns:205px 1fr}.content{padding:28px 22px}.team-grid{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.shell{display:block}.sidebar{min-height:0;height:auto;padding:13px}.brand{padding:0 5px 12px}.season,.sidebottom{display:none}.nav{display:flex;overflow-x:auto}.nav button{white-space:nowrap;padding:10px;font-size:10px}.nav .ico{display:none}.topbar{height:52px;padding:0 15px}.content{padding:24px 14px 40px}.team-grid{grid-template-columns:1fr 1fr}.columns,.racebox{grid-template-columns:1fr}.trackbox{min-height:190px}.driver-cards{grid-template-columns:1fr}.feature-grid{grid-template-columns:1fr}.hero .track{right:-5%;opacity:.2}.hero .go{right:14px;bottom:12px}.title-row h1{font-size:34px}.team-tag{font-size:9px}.team-profile{align-items:flex-start}.setup-foot{align-items:flex-start;flex-direction:column}.setup-foot .primary{width:100%}}
+@media(max-width:420px){.team-grid{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:13px}.stat strong{font-size:20px}.team-tag{display:none}.setting-row{align-items:flex-start;flex-direction:column}.setting-row button{width:100%}}
+</style>
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <a class="brand" href="#" aria-label="F1 Team Manager Simulator - início">
-        <span class="brand-mark">FT</span>
-        <span class="brand-copy"><strong>TEAM MANAGER</strong><small>RACING SIMULATOR</small></span>
-      </a>
-      <div class="season-label">TEMPORADA <strong id="sidebar-season">2026</strong></div>
-      <nav class="main-nav" aria-label="Navegação principal">
-        <button class="nav-item active" data-page="overview"><span class="nav-icon">▦</span> Visão geral</button>
-        <button class="nav-item" data-page="team"><span class="nav-icon">◉</span> Minha equipe</button>
-        <button class="nav-item" data-page="car"><span class="nav-icon">⌁</span> Desenvolvimento</button>
-        <button class="nav-item" data-page="calendar"><span class="nav-icon">▤</span> Calendário</button>
-        <button class="nav-item" data-page="race"><span class="nav-icon">▸</span> Central de corrida</button>
-      </nav>
-      <div class="sidebar-bottom">
-        <div class="save-status"><span class="status-dot"></span><span id="save-status">Salvamento local ativo</span></div>
-        <button class="nav-item subtle" id="settings-button"><span class="nav-icon">⚙</span> Configurações</button>
-        <div class="profile-mini">
-          <div class="avatar">TM</div>
-          <div><strong>Diretor da equipe</strong><small>Chefe de equipe</small></div>
-        </div>
-      </div>
-    </aside>
-
-    <main class="main-content">
-      <header class="topbar">
-        <div class="breadcrumb"><span>CARREIRA</span><b>/</b><strong id="topbar-section">VISÃO GERAL</strong></div>
-        <div class="topbar-right">
-          <div class="top-stat"><span>ORÇAMENTO</span><strong id="top-budget">—</strong></div>
-          <div class="top-divider"></div>
-          <div class="round-indicator"><span class="live-dot"></span> PRÉ-TEMPORADA</div>
-        </div>
-      </header>
-
-      <section id="career-setup" class="setup-screen">
-        <div class="setup-heading">
-          <span class="eyebrow">SUA JORNADA COMEÇA AQUI</span>
-          <h1>CONSTRUA SUA<br><em>PRÓPRIA HISTÓRIA.</em></h1>
-          <p>Escolha uma equipe, assuma o comando e transforme potencial em resultados.</p>
-        </div>
-        <div class="setup-panel">
-          <div class="panel-heading">
-            <div><span class="eyebrow">NOVA CARREIRA</span><h2>Escolha sua equipe</h2></div>
-            <span class="step-count">01 <i>/ 02</i></span>
-          </div>
-          <div id="team-options" class="team-grid"></div>
-          <div class="setup-footer">
-            <div class="selected-team-copy"><span class="eyebrow">EQUIPE SELECIONADA</span><strong id="selected-team-name">Selecione uma equipe</strong></div>
-            <button id="start-career" class="primary-button" disabled>ASSUMIR EQUIPE <span>↗</span></button>
-          </div>
-        </div>
-        <p class="disclaimer">Universo fictício de automobilismo criado para este simulador. Equipes e pilotos são personagens originais.</p>
-      </section>
-
-      <section id="game-screen" class="game-screen hidden">
-        <div id="page-overview" class="page active">
-          <div class="page-title-row">
-            <div><span class="eyebrow">CENTRAL DE COMANDO · TEMPORADA <span data-season>2026</span></span><h1>VISÃO <em>GERAL</em></h1><p class="muted">Acompanhe o estado da equipe e prepare o próximo desafio.</p></div>
-            <div class="team-chip"><span id="team-chip-color" class="team-color"></span><strong id="team-chip-name">Equipe</strong></div>
-          </div>
-          <div class="hero-card">
-            <div class="hero-content">
-              <span class="eyebrow">PRÓXIMO EVENTO</span>
-              <h2 id="next-race-name">GP de abertura</h2>
-              <p id="next-race-location">Circuito Internacional · 01–03 MAR</p>
-              <div class="hero-meta"><span>◷ <b>FIM DE SEMANA DE CORRIDA</b></span><span>◎ <b>PREPARAÇÃO</b></span></div>
-            </div>
-            <div class="hero-track" aria-hidden="true"><div class="track-line"></div><span class="track-label">CIRCUITO</span></div>
-            <button class="hero-action" data-go="calendar">VER CALENDÁRIO <span>→</span></button>
-          </div>
-          <div class="stats-grid">
-            <article class="stat-card"><span class="stat-label">ORÇAMENTO DISPONÍVEL</span><strong id="overview-budget">—</strong><small class="positive">Capital da equipe</small><span class="stat-symbol">R$</span></article>
-            <article class="stat-card"><span class="stat-label">PONTOS NO CAMPEONATO</span><strong>0</strong><small class="muted">Temporada ainda não iniciada</small><span class="stat-symbol">✦</span></article>
-            <article class="stat-card"><span class="stat-label">POSIÇÃO DOS CONSTRUTORES</span><strong>—</strong><small class="muted">Aguardando primeira corrida</small><span class="stat-symbol">▥</span></article>
-            <article class="stat-card"><span class="stat-label">REPUTAÇÃO</span><strong id="overview-reputation">—</strong><small class="muted">Nível inicial da equipe</small><span class="stat-symbol">◆</span></article>
-          </div>
-          <div class="content-grid">
-            <article class="content-card drivers-card">
-              <div class="card-heading"><div><span class="eyebrow">LINE-UP</span><h3>Pilotos titulares</h3></div><button class="text-button" data-go="team">GERENCIAR →</button></div>
-              <div id="overview-drivers" class="driver-list"></div>
-            </article>
-            <article class="content-card car-card">
-              <div class="card-heading"><div><span class="eyebrow">PACOTE TÉCNICO</span><h3>Desempenho do carro</h3></div><button class="text-button" data-go="car">DETALHES →</button></div>
-              <div id="overview-car-stats" class="performance-list"></div>
-            </article>
-          </div>
-        </div>
-
-        <div id="page-team" class="page">
-          <div class="page-title-row"><div><span class="eyebrow">ESTRUTURA ORGANIZACIONAL</span><h1>MINHA <em>EQUIPE</em></h1><p class="muted">Conheça seu line-up e a estrutura sob seu comando.</p></div></div>
-          <div class="team-profile-card" id="team-profile"></div>
-          <div class="section-heading"><div><span class="eyebrow">PILOTOS</span><h2>Dupla titular</h2></div><span class="muted">Temporada <span data-season>2026</span></span></div>
-          <div id="team-driver-cards" class="driver-cards"></div>
-        </div>
-
-        <div id="page-car" class="page">
-          <div class="page-title-row"><div><span class="eyebrow">CENTRO DE ENGENHARIA</span><h1>DESENVOLVIMENTO <em>DO CARRO</em></h1><p class="muted">Acompanhe os atributos técnicos e planeje futuras melhorias.</p></div></div>
-          <div class="development-layout">
-            <div class="car-visual-card"><span class="eyebrow">MONOPOSTO · ESPECIFICAÇÃO ATUAL</span><div class="car-silhouette"><span class="car-number">01</span><div class="car-nose"></div><div class="car-body"></div><div class="car-wing front"></div><div class="car-wing rear"></div><i class="wheel w1"></i><i class="wheel w2"></i><i class="wheel w3"></i><i class="wheel w4"></i></div><div class="car-visual-footer"><strong id="car-model-name">FTM-01</strong><span>CHASSI DE PRIMEIRA GERAÇÃO</span></div></div>
-            <div class="content-card"><div class="card-heading"><div><span class="eyebrow">TELEMETRIA DE ENGENHARIA</span><h3>Atributos do carro</h3></div></div><div id="car-performance" class="performance-list"></div><div class="development-note"><span>i</span><p>O desenvolvimento de componentes será habilitado na próxima etapa. Os atributos atuais formam a base de desempenho da equipe.</p></div></div>
-          </div>
-        </div>
-
-        <div id="page-calendar" class="page">
-          <div class="page-title-row"><div><span class="eyebrow">CAMPEONATO MUNDIAL</span><h1>CALENDÁRIO <em>2026</em></h1><p class="muted">Planejamento inicial da temporada. Os eventos serão simulados em etapas futuras.</p></div></div>
-          <div class="content-card calendar-card"><div class="card-heading"><div><span class="eyebrow">TEMPORADA</span><h3>Grandes Prêmios</h3></div><span class="pill neutral">CALENDÁRIO PROVISÓRIO</span></div><div id="calendar-list" class="calendar-list"></div></div>
-        </div>
-
-        <div id="page-race" class="page">
-          <div class="page-title-row"><div><span class="eyebrow">RACE CONTROL</span><h1>CENTRAL DE <em>CORRIDA</em></h1><p class="muted">O centro de acompanhamento das corridas da sua equipe.</p></div></div>
-          <div class="race-preview">
-            <div class="race-preview-track"><div class="mini-track"></div><span>SIMULAÇÃO 2D · VISÃO SUPERIOR</span></div>
-            <div class="race-preview-copy"><span class="eyebrow">MOTOR DE SIMULAÇÃO</span><h2>A pista está sendo preparada.</h2><p>A próxima fase implementará o circuito, os carros controlados por IA, a dinâmica de corrida e as colisões físicas.</p><span class="pill warning">EM DESENVOLVIMENTO</span></div>
-          </div>
-          <div class="race-feature-grid"><div class="feature-tile"><span>01</span><strong>Dinâmica dos carros</strong><small>Aceleração, frenagem, aderência e trajetória.</small></div><div class="feature-tile"><span>02</span><strong>Disputas e colisões</strong><small>Contato físico, danos e consequências.</small></div><div class="feature-tile"><span>03</span><strong>Estratégia em tempo real</strong><small>Pneus, combustível e decisões de pit wall.</small></div></div>
-        </div>
-      </section>
-    </main>
+<div class="shell">
+<aside class="sidebar">
+  <div class="brand"><div class="mark">FT</div><div><strong>TEAM MANAGER</strong><small>RACING SIMULATOR</small></div></div>
+  <div class="season">TEMPORADA <b id="sideSeason">2026</b></div>
+  <nav class="nav" aria-label="Menu principal">
+    <button class="active" data-page="overview"><span class="ico">▦</span>Visão geral</button>
+    <button data-page="team"><span class="ico">◉</span>Minha equipe</button>
+    <button data-page="car"><span class="ico">⌁</span>Desenvolvimento</button>
+    <button data-page="calendar"><span class="ico">▤</span>Calendário</button>
+    <button data-page="race"><span class="ico">▸</span>Central de corrida</button>
+  </nav>
+  <div class="sidebottom"><div class="save"><i class="dot"></i>Salvamento local ativo</div><button class="nav" id="settingsBtn" style="width:100%;display:block;text-align:left;padding:12px;color:#aab8c8;background:transparent;border:0">⚙ Configurações</button><div class="profile"><div class="avatar">TM</div><div><strong>Diretor da equipe</strong><small>Chefe de equipe</small></div></div></div>
+</aside>
+<main class="main">
+<header class="topbar"><div class="crumb">CARREIRA <b>/</b> <strong id="crumb">NOVA CARREIRA</strong></div><div><div class="budget-label">ORÇAMENTO</div><div class="budget-value" id="topBudget">—</div></div></header>
+<section class="content" id="setup">
+  <div class="heading"><span class="eyebrow">SUA JORNADA COMEÇA AQUI</span><h1>CONSTRUA SUA<br><em>PRÓPRIA HISTÓRIA.</em></h1><p class="muted">Escolha uma equipe, assuma o comando e transforme potencial em resultados.</p></div>
+  <div class="setup-panel"><div class="panel-head"><div><span class="eyebrow">NOVA CARREIRA</span><h2>Escolha sua equipe</h2></div><span class="muted">01 / 01</span></div><div class="team-grid" id="teamChoices"></div><div class="setup-foot"><div><span class="eyebrow">EQUIPE SELECIONADA</span><strong id="selectedName">Selecione uma equipe</strong></div><button class="primary" id="startBtn" disabled>ASSUMIR EQUIPE　↗</button></div></div>
+  <p class="disclaimer">Universo fictício de automobilismo. Equipes, pilotos e calendário são conteúdos originais e provisórios.</p>
+</section>
+<section class="content hidden" id="game">
+  <div class="page active" id="page-overview">
+    <div class="title-row"><div><span class="eyebrow">CENTRAL DE COMANDO · TEMPORADA <span class="seasonText">2026</span></span><h1>VISÃO <em>GERAL</em></h1><p class="muted">Acompanhe o estado da equipe e prepare o próximo desafio.</p></div><div class="team-tag"><i id="tagColor"></i><b id="tagName">Equipe</b></div></div>
+    <div class="hero"><div><span class="eyebrow">PRÓXIMO EVENTO</span><h2 id="nextRace">GP do Bahrein</h2><p id="nextLocation">Sakhir · 06–08 MAR</p></div><div class="track"></div><button class="go" data-go="calendar">VER CALENDÁRIO →</button></div>
+    <div class="stats"><div class="stat"><span>ORÇAMENTO DISPONÍVEL</span><strong id="budgetStat">—</strong><small>Capital da equipe</small></div><div class="stat"><span>PONTOS NO CAMPEONATO</span><strong>0</strong><small>Temporada ainda não iniciada</small></div><div class="stat"><span>POSIÇÃO DOS CONSTRUTORES</span><strong>—</strong><small>Aguardando primeira corrida</small></div><div class="stat"><span>REPUTAÇÃO</span><strong id="reputation">—</strong><small>Nível inicial da equipe</small></div></div>
+    <div class="columns"><article class="card"><div class="card-head"><div><span class="eyebrow">LINE-UP</span><h3>Pilotos titulares</h3></div><button class="linkbtn" data-go="team">GERENCIAR →</button></div><div id="overviewDrivers"></div></article><article class="card"><div class="card-head"><div><span class="eyebrow">PACOTE TÉCNICO</span><h3>Desempenho do carro</h3></div><button class="linkbtn" data-go="car">DETALHES →</button></div><div id="overviewPerf"></div></article></div>
   </div>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-    <div class="modal-card"><button id="close-settings" class="modal-close" aria-label="Fechar">×</button><span class="eyebrow">PREFERÊNCIAS</span><h2 id="settings-title">Configurações</h2><p>Seu progresso é salvo neste navegador.</p><div class="settings-row"><div><strong>Dados da carreira</strong><small>Apagar a carreira atual e voltar à seleção de equipe.</small></div><button id="reset-career" class="danger-button">REINICIAR CARREIRA</button></div></div>
-  </div>
-  <script type="module" src="js/main.js"></script>
+  <div class="page" id="page-team"><div class="title-row"><div><span class="eyebrow">ESTRUTURA ORGANIZACIONAL</span><h1>MINHA <em>EQUIPE</em></h1><p class="muted">Conheça seu line-up e a estrutura sob seu comando.</p></div></div><div class="team-profile" id="teamProfile"></div><div class="section-head"><div><span class="eyebrow">PILOTOS</span><h2>Dupla titular</h2></div></div><div class="driver-cards" id="driverCards"></div></div>
+  <div class="page" id="page-car"><div class="title-row"><div><span class="eyebrow">CENTRO DE ENGENHARIA</span><h1>DESENVOLVIMENTO <em>DO CARRO</em></h1><p class="muted">Atributos técnicos do pacote atual da equipe.</p></div></div><div class="columns"><div class="card car-card"><span class="eyebrow">MONOPOSTO · VISTA SUPERIOR</span><div class="car-illustration"><div class="wheel w1"></div><div class="wheel w2"></div><div class="wheel w3"></div><div class="wheel w4"></div><div class="wing front"></div><div class="wing rear"></div><div class="nose"></div><div class="carbody"></div></div><strong id="modelName">FTM-01</strong></div><article class="card"><span class="eyebrow">TELEMETRIA DE ENGENHARIA</span><h3>Atributos do carro</h3><div id="carPerf"></div><p class="notice">O desenvolvimento de componentes será habilitado em uma próxima etapa. Estes atributos formam a base inicial do desempenho.</p></article></div></div>
+  <div class="page" id="page-calendar"><div class="title-row"><div><span class="eyebrow">CAMPEONATO</span><h1>CALENDÁRIO <em>2026</em></h1><p class="muted">Calendário provisório da primeira temporada.</p></div></div><article class="card"><div class="card-head"><div><span class="eyebrow">TEMPORADA</span><h3>Grandes Prêmios</h3></div><span class="eyebrow">10 ETAPAS</span></div><div class="calendar-list" id="calendarList"></div></article></div>
+  <div class="page" id="page-race"><div class="title-row"><div><span class="eyebrow">RACE CONTROL</span><h1>CENTRAL DE <em>CORRIDA</em></h1><p class="muted">O centro de acompanhamento das corridas da sua equipe.</p></div></div><div class="racebox"><div class="trackbox"><div class="mini-track"></div><small>SIMULAÇÃO 2D · VISÃO SUPERIOR</small></div><div class="racecopy"><span class="eyebrow">MOTOR DE SIMULAÇÃO</span><h2>A pista está sendo preparada.</h2><p>A próxima fase implementará circuito, carros controlados por IA, dinâmica de corrida e colisões físicas.</p><span class="eyebrow" style="color:#e9bd70">● EM DESENVOLVIMENTO</span></div></div><div class="feature-grid"><div class="feature"><b>01</b><strong>Dinâmica dos carros</strong><small>Aceleração, frenagem, aderência e trajetória.</small></div><div class="feature"><b>02</b><strong>Disputas e colisões</strong><small>Contato físico, danos e consequências.</small></div><div class="feature"><b>03</b><strong>Estratégia em tempo real</strong><small>Pneus, combustível e decisões do pit wall.</small></div></div></div>
+</section>
+</main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="modal hidden" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="modal-card"><button class="close" id="closeModal" aria-label="Fechar">×</button><span class="eyebrow">PREFERÊNCIAS</span><h2 id="settingsTitle">Configurações</h2><p>O progresso é salvo neste navegador, neste dispositivo.</p><div class="setting-row"><div><b>Dados da carreira</b><small>Apagar a carreira atual e voltar à seleção de equipe.</small></div><button class="danger" id="resetBtn">REINICIAR CARREIRA</button></div></div></div>
+<script>
+"use strict";
+const TEAMS=[
+{id:"apex",name:"Apex Grand Prix",base:"Reino Unido",color:"#e3424d",budget:142000000,reputation:78,rating:86,drivers:[{name:"Lucas Moretti",number:16,nationality:"Brasil",rating:88,traits:{"Classificação":90,"Corrida":87,"Consistência":86,"Gestão de pneus":84}},{name:"Ethan Cole",number:22,nationality:"Reino Unido",rating:84,traits:{"Classificação":85,"Corrida":84,"Consistência":83,"Gestão de pneus":86}}],car:{aero:86,power:84,chassis:85,brakes:87,reliability:82}},
+{id:"veloce",name:"Scuderia Veloce",base:"Itália",color:"#d94742",budget:128000000,reputation:82,rating:88,drivers:[{name:"Matteo Ricci",number:7,nationality:"Itália",rating:89,traits:{"Classificação":91,"Corrida":88,"Consistência":86,"Gestão de pneus":85}},{name:"Noah Bennett",number:31,nationality:"Austrália",rating:82,traits:{"Classificação":83,"Corrida":82,"Consistência":81,"Gestão de pneus":84}}],car:{aero:88,power:89,chassis:84,brakes:86,reliability:80}},
+{id:"titan",name:"Titan Motorsport",base:"Alemanha",color:"#55a5d8",budget:156000000,reputation:85,rating:90,drivers:[{name:"Felix Weber",number:4,nationality:"Alemanha",rating:91,traits:{"Classificação":92,"Corrida":90,"Consistência":90,"Gestão de pneus":89}},{name:"Oliver Hayes",number:18,nationality:"Reino Unido",rating:86,traits:{"Classificação":87,"Corrida":85,"Consistência":86,"Gestão de pneus":85}}],car:{aero:90,power:88,chassis:90,brakes:89,reliability:86}},
+{id:"falcon",name:"Falcon Racing",base:"Estados Unidos",color:"#d7a64b",budget:105000000,reputation:70,rating:80,drivers:[{name:"Mason Reed",number:12,nationality:"Estados Unidos",rating:83,traits:{"Classificação":84,"Corrida":82,"Consistência":81,"Gestão de pneus":82}},{name:"Thiago Alves",number:27,nationality:"Brasil",rating:80,traits:{"Classificação":81,"Corrida":80,"Consistência":79,"Gestão de pneus":83}}],car:{aero:79,power:82,chassis:80,brakes:81,reliability:78}},
+{id:"northern",name:"Northern Lights GP",base:"Suécia",color:"#70b7a2",budget:116000000,reputation:74,rating:82,drivers:[{name:"Erik Lind",number:9,nationality:"Suécia",rating:85,traits:{"Classificação":86,"Corrida":84,"Consistência":85,"Gestão de pneus":87}},{name:"Daniel Park",number:40,nationality:"Coreia do Sul",rating:81,traits:{"Classificação":82,"Corrida":81,"Consistência":80,"Gestão de pneus":82}}],car:{aero:83,power:80,chassis:84,brakes:82,reliability:85}}
+];
+const CALENDAR=[["GP do Bahrein","Sakhir","06–08 MAR"],["GP da Arábia Saudita","Jeddah","13–15 MAR"],["GP da Austrália","Melbourne","27–29 MAR"],["GP do Japão","Suzuka","10–12 ABR"],["GP de Mônaco","Monte Carlo","22–24 MAI"],["GP do Canadá","Montreal","05–07 JUN"],["GP da Grã-Bretanha","Silverstone","03–05 JUL"],["GP da Itália","Monza","04–06 SET"],["GP de Singapura","Marina Bay","09–11 OUT"],["GP de São Paulo","Interlagos","06–08 NOV"]];
+const $=s=>document.querySelector(s);let selected=null,career=null;
+function money(v){return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0}).format(v)}
+function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2400)}
+function load(){try{career=JSON.parse(localStorage.getItem("ftm-career-v2")||"null")}catch(e){career=null}}
+function save(){try{localStorage.setItem("ftm-career-v2",JSON.stringify(career));return true}catch(e){toast("Não foi possível salvar os dados neste navegador.");return false}}
+function renderChoices(){
+ $("#teamChoices").innerHTML=TEAMS.map(t=>`<button class="team-choice ${selected===t.id?"selected":""}" data-team="${t.id}" aria-pressed="${selected===t.id}"><div><i class="swatch" style="background:${t.color}"></i><strong>${t.name}</strong></div><small>${t.base} · Avaliação geral ${t.rating}</small><div class="money"><span>ORÇAMENTO INICIAL</span><b>${money(t.budget)}</b></div></button>`).join("");
+ document.querySelectorAll("[data-team]").forEach(b=>b.addEventListener("click",()=>{selected=b.dataset.team;$("#selectedName").textContent=TEAMS.find(t=>t.id===selected).name;$("#startBtn").disabled=false;renderChoices()}));
+}
+function renderDrivers(el,drivers,detailed=false){el.innerHTML=drivers.map((d,i)=>detailed?`<article class="driver-card"><div class="driver-card-top"><div><span class="eyebrow">PILOTO TITULAR · #${d.number}</span><h3>${d.name}</h3><p>${d.nationality}</p></div><div class="big-rating">${d.rating}</div></div><div class="traits">${Object.entries(d.traits).map(([k,v])=>`<div class="trait"><span>${k}</span><b>${v}</b></div>`).join("")}</div></article>`:`<div class="driver-row"><span class="driver-no">0${i+1}</span><div class="driver-avatar">${d.name.split(" ").map(x=>x[0]).slice(0,2).join("")}</div><div class="driver-info"><strong>${d.name}</strong><small>${d.nationality} · #${d.number}</small></div><div class="rating">${d.rating}<small>AVALIAÇÃO</small></div></div>`).join("")}
+function renderPerf(el,car){const labels={aero:"Aerodinâmica",power:"Unidade de potência",chassis:"Chassi",brakes:"Freios",reliability:"Confiabilidade"};el.innerHTML=Object.entries(labels).map(([k,l])=>`<div class="perf"><span>${l}</span><div class="bar"><i style="width:${car[k]}%"></i></div><b>${car[k]}</b></div>`).join("")}
+function currentTeam(){return TEAMS.find(t=>t.id===career?.teamId)}
+function renderCalendar(){$("#calendarList").innerHTML=CALENDAR.map((r,i)=>`<div class="calendar-row"><span class="round">${String(i+1).padStart(2,"0")}</span><div><strong>${r[0]}</strong><small>${r[1]}</small></div><time>${r[2]}</time></div>`).join("");$("#nextRace").textContent=CALENDAR[0][0];$("#nextLocation").textContent=CALENDAR[0][1]+" · "+CALENDAR[0][2]}
+function renderGame(){
+ const t=currentTeam();if(!career||!t){$("#setup").classList.remove("hidden");$("#game").classList.add("hidden");$("#crumb").textContent="NOVA CARREIRA";$("#topBudget").textContent="—";return}
+ $("#setup").classList.add("hidden");$("#game").classList.remove("hidden");$("#crumb").textContent="VISÃO GERAL";$("#topBudget").textContent=money(career.budget);$("#sideSeason").textContent=career.season;document.querySelectorAll(".seasonText").forEach(x=>x.textContent=career.season);
+ $("#tagName").textContent=t.name;$("#tagColor").style.background=t.color;$("#budgetStat").textContent=money(career.budget);$("#reputation").textContent=career.reputation+"/100";
+ $("#teamProfile").innerHTML=`<i class="accent" style="background:${t.color}"></i><div><span class="eyebrow">EQUIPE DE FÓRMULA · ${t.base.toUpperCase()}</span><h2>${t.name}</h2><p>Base operacional: ${t.base} · Temporada ${career.season}</p></div>`;
+ renderDrivers($("#overviewDrivers"),t.drivers);renderDrivers($("#driverCards"),t.drivers,true);renderPerf($("#overviewPerf"),t.car);renderPerf($("#carPerf"),t.car);$("#modelName").textContent=t.id.toUpperCase()+"-01";renderCalendar();
+}
+function navigate(name){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));$("#page-"+name).classList.add("active");document.querySelectorAll(".nav button[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===name));const labels={overview:"VISÃO GERAL",team:"MINHA EQUIPE",car:"DESENVOLVIMENTO",calendar:"CALENDÁRIO",race:"CENTRAL DE CORRIDA"};$("#crumb").textContent=labels[name]}
+$("#startBtn").addEventListener("click",()=>{const t=TEAMS.find(x=>x.id===selected);if(!t)return;career={teamId:t.id,budget:t.budget,reputation:t.reputation,season:2026,points:0,round:1};if(save()){renderGame();navigate("overview");toast("Carreira iniciada: "+t.name)}});
+document.querySelectorAll(".nav button[data-page]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.page)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.go)));
+$("#settingsBtn").addEventListener("click",()=>$("#settingsModal").classList.remove("hidden"));
+$("#closeModal").addEventListener("click",()=>$("#settingsModal").classList.add("hidden"));
+$("#settingsModal").addEventListener("click",e=>{if(e.target.id==="settingsModal")$("#settingsModal").classList.add("hidden")});
+$("#resetBtn").addEventListener("click",()=>{if(!confirm("Tem certeza que deseja apagar a carreira salva?"))return;localStorage.removeItem("ftm-career-v2");career=null;selected=null;$("#settingsModal").classList.add("hidden");$("#selectedName").textContent="Selecione uma equipe";$("#startBtn").disabled=true;renderChoices();renderGame();toast("Carreira reiniciada.")});
+load();renderChoices();renderGame();
+</script>
 </body>
 </html>
