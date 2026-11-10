@@ -1,27 +1,21 @@
-# F1 Team Manager Simulator · v0.8
+# F1 Team Manager Simulator 0.9
 
-## Objetivo da atualização
-Conectar o desenvolvimento técnico ao desempenho real do monoposto e ampliar a leitura da garagem.
+Versão de estabilização baseada no build 0.8. Não adiciona grandes sistemas novos.
 
-## Novidades
-- Telemetria técnica do carro: velocidade, curvas, estabilidade, eficiência e gestão de pneus.
-- Valores-base fictícios por equipe, mantendo diferenças entre os carros do grid.
-- Melhorias de aerodinâmica, unidade de potência, chassi e suspensão alteram atributos específicos.
-- A simulação de corrida utiliza os atributos técnicos por setor, com efeitos diferentes em retas e curvas.
-- Eficiência influencia consumo de combustível; suspensão e chassi influenciam desgaste dos pneus.
-- Garagem mostra o desempenho atual, comparação com o pacote-base e últimas evoluções.
-- Engenharia mostra telemetria e histórico de projetos concluídos.
-- Migração automática dos saves anteriores, preservando a chave localStorage `ftms_v05_career`.
+## Correções e reforços
+- Normalização e validação dos dados da carreira ao carregar salvamentos.
+- Preservação da chave de armazenamento existente para manter compatibilidade com carreiras anteriores.
+- Validação dos valores financeiros antes do fechamento do mês.
+- Proteção contra fechamento duplicado do mês durante o processamento.
+- Proteção contra registro duplicado de pontos ao finalizar uma corrida.
+- Escape de conteúdo persistido antes de inserir textos na interface HTML.
+- Mantidos os sistemas existentes de equipes, contratos, finanças, desenvolvimento e corrida 2D.
 
-## Como jogar
-1. Abra `index.html` no navegador.
-2. Carregue sua carreira existente ou inicie uma equipe.
-3. Em Desenvolvimento do carro, inicie um projeto.
-4. Em Gestão financeira, feche o mês para concluir e instalar a melhoria.
-5. Compare os atributos na Garagem ou na Engenharia e dispute uma corrida para sentir a diferença.
+## Como executar
+Abra `index.html` em um navegador moderno. O jogo usa LocalStorage do próprio navegador.
 
-## Observações
-- Valores de desempenho e custos são parâmetros fictícios de gameplay.
-- O circuito e as corridas continuam sendo uma simulação demonstrativa de 12 voltas.
-- A versão não adiciona clima dinâmico, Safety Car, colisões físicas ou calendário completo.
-- A chave de salvamento foi mantida para preservar carreiras da versão 0.7.
+## Validação realizada
+- `node --check` no JavaScript embutido.
+- Verificação de IDs HTML duplicados e referências literais ausentes.
+- Testes de fumaça em ambiente JavaScript simulado: iniciar carreira, iniciar e concluir desenvolvimento, grid com 22 carros, pontuação de corrida sem duplicação, normalização de salvamento e escape HTML.
+- A interface não foi validada manualmente em navegador gráfico nesta execução.
