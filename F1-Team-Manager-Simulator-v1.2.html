@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F1 Team Manager Simulator · v1.1</title>
+<title>F1 Team Manager Simulator · v1.2</title>
 <style>
 :root{--bg:#090d14;--panel:#111925;--panel2:#151f2d;--line:#263346;--muted:#91a0b5;--text:#edf3fb;--accent:#e11d38;--cyan:#55c7df;--green:#48c78e;--shadow:0 18px 50px #0006}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% -20%,#1b2c43 0,transparent 45%),var(--bg);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}
@@ -85,7 +85,7 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
 <body>
 <header class="topbar">
  <div class="brand"><div class="brandmark">F1</div><div>TEAM MANAGER<small>RACE OPERATIONS SIMULATOR</small></div></div>
- <div class="topright"><span>SEASON 2026</span><span class="version">BUILD 1.1.0</span></div>
+ <div class="topright"><span id="seasonLabel">SEASON 2026</span><span class="version">BUILD 1.2.0</span></div>
 </header>
 <div class="layout">
 <aside>
@@ -106,18 +106,18 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
 </aside>
 <main>
 <section id="overview" class="section active">
- <div class="pagehead"><div><div class="eyebrow">PIT WALL / DASHBOARD</div><h1>Visão geral</h1><p class="sub">Acompanhe o estado da sua operação na temporada 2026.</p></div><button class="btn primary" id="chooseTeamBtn">Escolher equipe</button></div>
+ <div class="pagehead"><div><div class="eyebrow">PIT WALL / DASHBOARD</div><h1>Visão geral</h1><p class="sub">Acompanhe o estado da sua operação na temporada atual.</p></div><button class="btn primary" id="chooseTeamBtn">Escolher equipe</button></div>
  <div class="grid stats">
   <div class="card"><div class="statlabel">EQUIPE ATUAL</div><div class="statvalue" id="statTeam" style="font-size:18px">—</div><div class="statfoot">Escuderia selecionada</div></div>
   <div class="card"><div class="statlabel">PILOTOS</div><div class="statvalue" id="statDrivers">—</div><div class="statfoot">Dupla titular 2026</div></div>
-  <div class="card"><div class="statlabel">TEMPORADA</div><div class="statvalue">2026</div><div class="statfoot">22 pilotos · 11 equipes</div></div>
+  <div class="card"><div class="statlabel">TEMPORADA</div><div class="statvalue" id="overviewSeason">2026</div><div class="statfoot">22 pilotos · 11 equipes</div></div>
   <div class="card"><div class="statlabel">STATUS</div><div class="statvalue" id="statStatus" style="font-size:18px">Não iniciada</div><div class="statfoot">Carreira local</div></div>
  </div>
  <div class="grid contentgrid">
   <div class="card"><div class="cardhead"><h2>PRÓXIMO PASSO</h2><span class="eyebrow">GESTÃO</span></div><div id="nextStep" class="empty">Selecione uma equipe para assumir o comando e iniciar sua carreira.</div></div>
   <div class="card"><div class="cardhead"><h2>GRADE 2026</h2><span class="eyebrow">GRID COMPLETO</span></div><p style="font-size:31px;font-weight:850;margin:0">11 <span class="muted" style="font-size:13px">equipes</span></p><p class="muted" style="font-size:12px">11 equipes e 22 pilotos no grid simulado da temporada.</p><button class="btn" data-goto="teams">Ver equipes e pilotos →</button></div>
  </div>
- <div class="footer">F1 TEAM MANAGER SIMULATOR · BUILD 0.9.0 · ESTABILIDADE E CORREÇÕES · TEMPORADA 2026</div>
+ <div class="footer">F1 TEAM MANAGER SIMULATOR · BUILD 1.2.0 · CAMPEONATO E ESTATÍSTICAS</div>
 </section>
 <section id="teams" class="section">
  <div class="pagehead"><div><div class="eyebrow">CONSTRUTORES / 2026</div><h1>Selecione sua equipe</h1><p class="sub">Escolha uma das 11 escuderias para iniciar sua trajetória.</p></div><button class="btn primary" id="takeTeamBtn" disabled>Assumir equipe</button></div>
@@ -214,10 +214,11 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
 </section>
 
 <section id="calendar" class="section">
- <div class="pagehead"><div><div class="eyebrow">RACE CONTROL / CHAMPIONSHIP</div><h1>Calendário da temporada</h1><p class="sub">Temporada jogável compacta de 12 etapas. Acompanhe resultados e a disputa pelo título.</p></div><button class="btn primary" id="calendarRaceBtn" disabled>Ir para a próxima etapa →</button></div>
+ <div class="pagehead"><div><div class="eyebrow">RACE CONTROL / CHAMPIONSHIP</div><h1>Calendário da temporada</h1><p class="sub">Temporada jogável de 12 etapas, estatísticas individuais e histórico de campeonatos.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="nextSeasonBtn" style="display:none">Iniciar próxima temporada →</button><button class="btn primary" id="calendarRaceBtn" disabled>Ir para a próxima etapa →</button></div></div>
  <div id="calendarSummary" class="grid stats"></div>
  <div class="card"><div class="cardhead"><h2>ETAPAS DO CAMPEONATO</h2><span class="eyebrow">12 ROUNDS</span></div><div id="calendarList"></div></div>
  <div class="grid comparison-grid" style="margin-top:16px"><div class="card"><div class="cardhead"><h2>CAMPEONATO DE PILOTOS</h2><span class="eyebrow">DRIVERS</span></div><div id="driverStandings"></div></div><div class="card"><div class="cardhead"><h2>CAMPEONATO DE CONSTRUTORES</h2><span class="eyebrow">TEAMS</span></div><div id="constructorStandings"></div></div></div>
+ <div class="card" style="margin-top:16px"><div class="cardhead"><h2>HISTÓRICO DE TEMPORADAS</h2><span class="eyebrow">SEASON ARCHIVE</span></div><div id="seasonHistory"></div></div>
 </section>
 </main>
 </div>
@@ -281,7 +282,7 @@ function normalizeCareer(data){
  const base=makeCareer(data.teamId);
  const number=(value,fallback,min=0)=>{const n=Number(value);return Number.isFinite(n)&&n>=min?n:fallback;};
  const normalized={...base,...data};
- normalized.season=2026;
+ normalized.season=Math.max(2026,Math.floor(number(data.season,2026,2026)));
  normalized.month=Math.floor(number(data.month,1,1));
  normalized.cash=number(data.cash,base.cash);
  normalized.operatingCost=number(data.operatingCost,base.operatingCost);
@@ -304,7 +305,8 @@ function normalizeCareer(data){
   gridOrder:Array.isArray(savedWeekend.gridOrder)?savedWeekend.gridOrder.filter(name=>RACE_DRIVERS.some(d=>d.name===name)).slice(0,22):[],
   setupBonus:Math.max(0,Math.min(.012,number(savedWeekend.setupBonus,0))),raceSnapshot:savedWeekend.raceSnapshot&&typeof savedWeekend.raceSnapshot==='object'&&Array.isArray(savedWeekend.raceSnapshot.cars)?{round:Math.floor(number(savedWeekend.raceSnapshot.round,-1,-1)),eventId:String(savedWeekend.raceSnapshot.eventId||'').slice(0,40),elapsed:number(savedWeekend.raceSnapshot.elapsed,0),cars:savedWeekend.raceSnapshot.cars.slice(0,22).filter(x=>x&&typeof x.name==='string').map(x=>({name:x.name.slice(0,60),progress:number(x.progress,0,-1),wear:Math.max(0,Math.min(1,number(x.wear,0))),fuel:Math.max(0,Math.min(100,number(x.fuel,100))),tire:['soft','medium','hard'].includes(x.tire)?x.tire:'medium',pace:['push','balanced','conservative'].includes(x.pace)?x.pace:'balanced',pitRequested:!!x.pitRequested,pitTimer:Math.max(0,number(x.pitTimer,0)),pitStops:Math.max(0,Math.floor(number(x.pitStops,0))),finished:!!x.finished,finishTime:Number.isFinite(Number(x.finishTime))?Number(x.finishTime):null,requestedTire:['soft','medium','hard'].includes(x.requestedTire)?x.requestedTire:null,nextTire:['soft','medium','hard'].includes(x.nextTire)?x.nextTire:null}))}:null,completed:!!savedWeekend.completed
  }:null;
- normalized.raceHistory=Array.isArray(data.raceHistory)?data.raceHistory.slice(0,100).filter(x=>x&&typeof x==="object").map(x=>({...x,round:Number.isInteger(x.round)?x.round:null,circuit:String(x.circuit||"Etapa anterior").slice(0,80),month:Math.max(1,Math.floor(number(x.month,1,1))),points:Math.max(0,number(x.points,0)),positions:Array.isArray(x.positions)?x.positions.filter(pos=>pos&&typeof pos.name==="string").map(pos=>({name:pos.name.slice(0,60),position:Math.max(1,Math.floor(number(pos.position,1,1)))})):[]})):[];
+ normalized.raceHistory=Array.isArray(data.raceHistory)?data.raceHistory.slice(0,100).filter(x=>x&&typeof x==="object").map(x=>({...x,round:Number.isInteger(x.round)?x.round:null,circuit:String(x.circuit||"Etapa anterior").slice(0,80),month:Math.max(1,Math.floor(number(x.month,1,1))),points:Math.max(0,number(x.points,0)),poleDriver:typeof x.poleDriver==="string"?x.poleDriver.slice(0,60):null,positions:Array.isArray(x.positions)?x.positions.filter(pos=>pos&&typeof pos.name==="string").map(pos=>({name:pos.name.slice(0,60),position:Math.max(1,Math.floor(number(pos.position,1,1)))})):[],driverResults:Array.isArray(x.driverResults)?x.driverResults.filter(d=>d&&typeof d.name==="string").slice(0,22).map(d=>({name:d.name.slice(0,60),teamId:String(d.teamId||"").slice(0,40),team:String(d.team||"Equipe").slice(0,60),position:Math.max(1,Math.floor(number(d.position,99,1))),points:Math.max(0,number(d.points,0))})):[]})):[ ];
+ normalized.seasonHistory=Array.isArray(data.seasonHistory)?data.seasonHistory.slice(-30).filter(x=>x&&typeof x==="object"&&Number.isInteger(x.season)).map(x=>({season:x.season,champion:String(x.champion||"—").slice(0,60),constructorChampion:String(x.constructorChampion||"—").slice(0,60),races:Math.max(0,Math.floor(number(x.races,0))),drivers:Array.isArray(x.drivers)?x.drivers.slice(0,22).map(d=>({name:String(d.name||"—").slice(0,60),team:String(d.team||"—").slice(0,60),points:Math.max(0,number(d.points,0)),wins:Math.max(0,Math.floor(number(d.wins,0))),podiums:Math.max(0,Math.floor(number(d.podiums,0))),poles:Math.max(0,Math.floor(number(d.poles,0))),starts:Math.max(0,Math.floor(number(d.starts,0))),best:Math.max(1,Math.floor(number(d.best,99,1))),average:number(d.average,0)})):[],constructors:Array.isArray(x.constructors)?x.constructors.slice(0,11).map(t=>({team:String(t.team||"—").slice(0,60),points:Math.max(0,number(t.points,0)),wins:Math.max(0,Math.floor(number(t.wins,0))),podiums:Math.max(0,Math.floor(number(t.podiums,0)))})):[]})):[];
  const project=data.activeProject;
  normalized.activeProject=project&&DEV_PARTS[project.key]&&Math.floor(number(project.targetLevel,0,1))===normalized.development[project.key]+1&&normalized.development[project.key]<5?{key:project.key,name:DEV_PARTS[project.key].name,targetLevel:normalized.development[project.key]+1,cost:number(project.cost,devCostForLevel(project.key,normalized.development[project.key])),startedMonth:Math.max(1,Math.floor(number(project.startedMonth,normalized.month,1)))}:null;
  return normalized;
@@ -315,7 +317,7 @@ function load(){
  try{career=normalizeCareer(JSON.parse(localStorage.getItem(STORE)||"null"));}catch(e){career=null;}
  if(!career){try{const old=JSON.parse(localStorage.getItem(OLD_STORE)||localStorage.getItem(LEGACY_STORE)||"null");career=normalizeCareer(old);if(career)save();}catch(e){career=null;}}
 }
-function makeCareer(id){const t=team(id);const contracts=t.drivers.map(d=>{const data=DRIVER_GAME_DATA[d[1]]||[80,2];return {number:d[0],name:d[1],nationality:d[2],rating:data[0],salary:data[1],years:2};});return {teamId:id,season:2026,calendar:{currentRound:0,completedRounds:[],seasonComplete:false},weekend:null,createdAt:new Date().toISOString(),status:"Carreira iniciada",month:1,cash:TEAM_BUDGET[id],operatingCost:TEAM_BUDGET[id]*.055, sponsorIncome:TEAM_BUDGET[id]*.09,contracts,transactions:[{label:"Investimento inicial da equipe",amount:TEAM_BUDGET[id],type:"income",month:1}],development:{aero:1,power:1,chassis:1,suspension:1},developmentHistory:[],projectsDone:0,activeProject:null,teamPoints:0,raceHistory:[]};}
+function makeCareer(id){const t=team(id);const contracts=t.drivers.map(d=>{const data=DRIVER_GAME_DATA[d[1]]||[80,2];return {number:d[0],name:d[1],nationality:d[2],rating:data[0],salary:data[1],years:2};});return {teamId:id,season:2026,seasonHistory:[],calendar:{currentRound:0,completedRounds:[],seasonComplete:false},weekend:null,createdAt:new Date().toISOString(),status:"Carreira iniciada",month:1,cash:TEAM_BUDGET[id],operatingCost:TEAM_BUDGET[id]*.055, sponsorIncome:TEAM_BUDGET[id]*.09,contracts,transactions:[{label:"Investimento inicial da equipe",amount:TEAM_BUDGET[id],type:"income",month:1}],development:{aero:1,power:1,chassis:1,suspension:1},developmentHistory:[],projectsDone:0,activeProject:null,teamPoints:0,raceHistory:[]};}
 function renderTeams(){$("teamGrid").innerHTML=TEAMS.map(t=>`<article class="teamcard ${selectedId===t.id?'selected':''}" data-team="${t.id}" style="--team:${t.color}" tabindex="0" role="button" aria-pressed="${selectedId===t.id}" aria-label="Selecionar ${t.name}"><div class="teamstripe"></div><div class="teambody"><div class="teamtop"><div class="teamlogo">${t.abbr}</div><span class="muted" style="font-size:10px">2026</span></div><div class="teamname">${t.name}</div><div class="engine">UNIDADE DE POTÊNCIA · ${t.engine}</div><div class="drivers">${t.drivers.map(d=>`<div class="driverline"><span>${d[1]}</span><span>#${d[0]}</span></div>`).join("")}</div></div></article>`).join("");document.querySelectorAll("[data-team]").forEach(el=>{el.addEventListener("click",()=>selectTeam(el.dataset.team));el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectTeam(el.dataset.team)}})});$("takeTeamBtn").disabled=!selectedId;}
 function selectTeam(id){selectedId=id;renderTeams();toast(team(id).name+" selecionada.");}
 function startCareer(){if(!selectedId)return;if(career&&!confirm("Iniciar outra carreira? O progresso atual será substituído."))return;stopRaceTimer();race=null;career=makeCareer(selectedId);save();renderAll();showPage("overview");toast("Você assumiu a "+team(selectedId).name+"!");}
@@ -510,7 +512,7 @@ function finishRace(){
  const own=cars.filter(c=>c.teamId===career.teamId);
  const earned=driverResults.filter(x=>x.teamId===career.teamId).reduce((sum,x)=>sum+x.points,0);
  career.teamPoints=(career.teamPoints||0)+earned;
- const result={round:race.round,circuit:race.eventId,grandPrix:race.eventId,month:career.month,positions:own.map(c=>({name:c.name,position:cars.indexOf(c)+1})),driverResults,points:earned,elapsed:race.elapsed};
+ const result={season:career.season||2026,round:race.round,circuit:race.eventId,grandPrix:race.eventId,month:career.month,poleDriver:career.weekend?.qualifying?.Q3?.[0]?.name||career.weekend?.gridOrder?.[0]||null,positions:own.map(c=>({name:c.name,position:cars.indexOf(c)+1})),driverResults,points:earned,elapsed:race.elapsed};
  career.raceHistory=career.raceHistory||[];
  if(career.weekend)career.weekend.raceSnapshot=null;
  if(!career.calendar)career.calendar={currentRound:0,completedRounds:[],seasonComplete:false};
@@ -541,29 +543,60 @@ function closeMonth(){
   if(save()){renderAll();toast("Mês fechado. Caixa atualizado.");}else{toast("Não foi possível confirmar o salvamento do fechamento.");}
  }finally{monthClosing=false;if(button)button.disabled=!career;}
 }
-function championshipTables(){
- const drivers=new Map(RACE_DRIVERS.map(d=>[d.name,{name:d.name,teamId:d.teamId,team:d.team,points:0,wins:0}]));
- const constructors=new Map(TEAMS.map(t=>[t.id,{teamId:t.id,team:t.name,points:0,wins:0}]));
- (career?.raceHistory||[]).forEach(r=>(r.driverResults||[]).forEach(d=>{
-  const old=drivers.get(d.name)||{name:d.name,teamId:d.teamId,team:d.team,points:0,wins:0};old.points+=Number(d.points)||0;if(d.position===1)old.wins++;drivers.set(d.name,old);
-  const teamOld=constructors.get(d.teamId)||{teamId:d.teamId,team:d.team,points:0,wins:0};teamOld.points+=Number(d.points)||0;if(d.position===1)teamOld.wins++;constructors.set(d.teamId,teamOld);
- }));
- return {drivers:[...drivers.values()].sort((a,b)=>b.points-a.points||b.wins-a.wins),constructors:[...constructors.values()].sort((a,b)=>b.points-a.points||b.wins-a.wins)};
+function championshipTables(history=career?.raceHistory||[]){
+ const drivers=new Map(RACE_DRIVERS.map(d=>[d.name,{name:d.name,teamId:d.teamId,team:d.team,points:0,wins:0,podiums:0,poles:0,starts:0,best:99,finishTotal:0}]));
+ const constructors=new Map(TEAMS.map(t=>[t.id,{teamId:t.id,team:t.name,points:0,wins:0,podiums:0}]));
+ history.forEach(r=>{
+  const results=Array.isArray(r.driverResults)?r.driverResults:[];
+  results.forEach(d=>{
+   const old=drivers.get(d.name)||{name:d.name,teamId:d.teamId,team:d.team,points:0,wins:0,podiums:0,poles:0,starts:0,best:99,finishTotal:0};
+   const pos=Math.max(1,Number(d.position)||99);old.points+=Number(d.points)||0;old.starts++;old.finishTotal+=pos;old.best=Math.min(old.best,pos);if(pos===1)old.wins++;if(pos<=3)old.podiums++;drivers.set(d.name,old);
+   const teamOld=constructors.get(d.teamId)||{teamId:d.teamId,team:d.team,points:0,wins:0,podiums:0};teamOld.points+=Number(d.points)||0;if(pos===1)teamOld.wins++;if(pos<=3)teamOld.podiums++;constructors.set(d.teamId,teamOld);
+  });
+  if(r.poleDriver&&drivers.has(r.poleDriver))drivers.get(r.poleDriver).poles++;
+ });
+ const driverRows=[...drivers.values()].map(d=>({...d,average:d.starts?d.finishTotal/d.starts:0})).sort((a,b)=>b.points-a.points||b.wins-a.wins||b.podiums-a.podiums||a.best-b.best);
+ const constructorRows=[...constructors.values()].sort((a,b)=>b.points-a.points||b.wins-a.wins||b.podiums-a.podiums);
+ return {drivers:driverRows,constructors:constructorRows};
+}
+function archiveCurrentSeason(){
+ if(!career||!career.calendar?.seasonComplete)return false;
+ career.seasonHistory ||= [];
+ if(career.seasonHistory.some(x=>x.season===career.season))return true;
+ const tables=championshipTables();
+ const drivers=tables.drivers.map(d=>({name:d.name,team:d.team,points:d.points,wins:d.wins,podiums:d.podiums,poles:d.poles,starts:d.starts,best:d.starts?d.best:99,average:+d.average.toFixed(2)}));
+ const constructors=tables.constructors.map(t=>({team:t.team,points:t.points,wins:t.wins,podiums:t.podiums}));
+ career.seasonHistory.push({season:career.season,champion:drivers[0]?.points>0?drivers[0].name:'Sem campeão',constructorChampion:constructors[0]?.points>0?constructors[0].team:'Sem campeão',races:career.calendar.completedRounds.length,drivers,constructors});
+ career.seasonHistory=career.seasonHistory.slice(-30);save();return true;
+}
+function startNextSeason(){
+ if(!career||!career.calendar?.seasonComplete)return;
+ archiveCurrentSeason();
+ career.season=(career.season||2026)+1;
+ career.calendar={currentRound:0,completedRounds:[],seasonComplete:false};
+ career.weekend=null;career.raceHistory=[];career.teamPoints=0;race=null;stopRaceTimer();
+ save();renderAll();renderCalendar();renderWeekend();showPage('calendar');toast(`Temporada ${career.season} iniciada. Histórico anterior preservado.`);
+}
+function renderSeasonHistory(){
+ const el=$('seasonHistory');if(!el)return;const rows=(career?.seasonHistory||[]).slice().reverse();
+ el.innerHTML=rows.length?`<div class="tablewrap"><table><thead><tr><th>TEMPORADA</th><th>CAMPEÃO DE PILOTOS</th><th>CAMPEÃO DE CONSTRUTORES</th><th>GMS</th><th>ESTATÍSTICAS</th></tr></thead><tbody>${rows.map(x=>`<tr><td><strong>${x.season}</strong></td><td>${escapeHTML(x.champion)}</td><td>${escapeHTML(x.constructorChampion)}</td><td>${x.races}</td><td><details><summary style="cursor:pointer;color:var(--cyan)">Ver temporada</summary><div style="min-width:480px;padding:10px 0"><strong>Campeonato de pilotos</strong><table><thead><tr><th>#</th><th>Piloto</th><th>Equipe</th><th>PTS</th><th>Vit</th><th>Pód</th><th>Pol</th><th>Larg</th><th>Média</th></tr></thead><tbody>${(x.drivers||[]).slice(0,10).map((d,i)=>`<tr><td>${i+1}</td><td>${escapeHTML(d.name)}</td><td>${escapeHTML(d.team)}</td><td>${d.points}</td><td>${d.wins}</td><td>${d.podiums}</td><td>${d.poles}</td><td>${d.starts}</td><td>${Number(d.average||0).toFixed(1)}</td></tr>`).join('')}</tbody></table><strong style="display:block;margin-top:12px">Campeonato de construtores</strong><table><thead><tr><th>#</th><th>Equipe</th><th>PTS</th><th>Vitórias</th><th>Pódios</th></tr></thead><tbody>${(x.constructors||[]).map((t,i)=>`<tr><td>${i+1}</td><td>${escapeHTML(t.team)}</td><td>${t.points}</td><td>${t.wins}</td><td>${t.podiums}</td></tr>`).join('')}</tbody></table></div></details></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">As temporadas concluídas serão arquivadas aqui, com campeões e estatísticas finais.</div>';
 }
 function renderCalendar(){
- const summary=$('calendarSummary'),list=$('calendarList'),driverEl=$('driverStandings'),teamEl=$('constructorStandings'),button=$('calendarRaceBtn');
- if(!career){summary.innerHTML='<div class="empty">Inicie uma carreira para acompanhar o campeonato.</div>';list.innerHTML='<div class="empty">Nenhuma temporada ativa.</div>';driverEl.innerHTML=teamEl.innerHTML='<div class="empty">Classificação indisponível.</div>';button.disabled=true;return;}
- career.calendar ||= {currentRound:0,completedRounds:[],seasonComplete:false};
- const completed=career.calendar.completedRounds||[],next=SEASON_CALENDAR[career.calendar.currentRound];
+ const summary=$('calendarSummary'),list=$('calendarList'),driverEl=$('driverStandings'),teamEl=$('constructorStandings'),button=$('calendarRaceBtn'),nextSeason=$('nextSeasonBtn');
+ if(!career){summary.innerHTML='<div class="empty">Inicie uma carreira para acompanhar o campeonato.</div>';list.innerHTML='<div class="empty">Nenhuma temporada ativa.</div>';driverEl.innerHTML=teamEl.innerHTML='<div class="empty">Classificação indisponível.</div>';button.disabled=true;if(nextSeason)nextSeason.style.display='none';renderSeasonHistory();return;}
+ career.calendar ||= {currentRound:0,completedRounds:[],seasonComplete:false};const completed=career.calendar.completedRounds||[],next=SEASON_CALENDAR[career.calendar.currentRound];
+ $('seasonLabel').textContent=`SEASON ${career.season||2026}`;$('overviewSeason').textContent=career.season||2026;
  summary.innerHTML=`<div class="card"><div class="statlabel">ETAPAS CONCLUÍDAS</div><div class="statvalue">${completed.length}/${SEASON_CALENDAR.length}</div></div><div class="card"><div class="statlabel">PRÓXIMA ETAPA</div><div class="statvalue" style="font-size:18px">${next?escapeHTML(next.name):'Temporada encerrada'}</div></div><div class="card"><div class="statlabel">PONTOS DA EQUIPE</div><div class="statvalue">${career.teamPoints||0}</div></div><div class="card"><div class="statlabel">STATUS</div><div class="statvalue" style="font-size:18px">${career.calendar.seasonComplete?'Concluída':'Em andamento'}</div></div>`;
  list.innerHTML=`<div class="tablewrap"><table><thead><tr><th>ROUND</th><th>GRANDE PRÊMIO</th><th>CIRCUITO</th><th>STATUS</th><th>RESULTADO</th></tr></thead><tbody>${SEASON_CALENDAR.map((e,i)=>{const done=completed.includes(i),isNext=i===career.calendar.currentRound&&!career.calendar.seasonComplete;const result=(career.raceHistory||[]).find(r=>r.round===i);const best=result?.positions?.length?Math.min(...result.positions.map(x=>x.position)):null;return `<tr><td><strong>${String(i+1).padStart(2,'0')}</strong></td><td>${escapeHTML(e.name)}<div class="muted" style="font-size:10px">${escapeHTML(e.country)}</div></td><td>${escapeHTML(e.circuit)}</td><td><span class="pill" style="${done?'color:#48c78e':isNext?'color:#55c7df':''}">${done?'Concluído':isNext?'Próxima etapa':'Pendente'}</span></td><td>${done?(best?`Melhor P${best}`:'Concluído'):'—'}</td></tr>`;}).join('')}</tbody></table></div>`;
  const standings=championshipTables();
- driverEl.innerHTML=standings.drivers.length?`<div class="tablewrap"><table><thead><tr><th>#</th><th>PILOTO</th><th>EQUIPE</th><th>PTS</th><th>VITÓRIAS</th></tr></thead><tbody>${standings.drivers.map((d,i)=>`<tr><td>${i+1}</td><td><strong>${escapeHTML(d.name)}</strong></td><td>${escapeHTML(d.team)}</td><td><strong>${d.points}</strong></td><td>${d.wins}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">A classificação será formada após a primeira corrida.</div>';
- teamEl.innerHTML=standings.constructors.length?`<div class="tablewrap"><table><thead><tr><th>#</th><th>EQUIPE</th><th>PTS</th><th>VITÓRIAS</th></tr></thead><tbody>${standings.constructors.map((t,i)=>`<tr><td>${i+1}</td><td><strong>${escapeHTML(t.team)}</strong></td><td><strong>${t.points}</strong></td><td>${t.wins}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">A classificação será formada após a primeira corrida.</div>';
+ driverEl.innerHTML=`<div class="tablewrap"><table><thead><tr><th>#</th><th>PILOTO</th><th>EQUIPE</th><th>PTS</th><th>VIT</th><th>PÓD</th><th>POL</th><th>LARG</th><th>MELHOR</th><th>MÉDIA</th></tr></thead><tbody>${standings.drivers.map((d,i)=>`<tr><td>${i+1}</td><td><strong>${escapeHTML(d.name)}</strong></td><td>${escapeHTML(d.team)}</td><td><strong>${d.points}</strong></td><td>${d.wins}</td><td>${d.podiums}</td><td>${d.poles}</td><td>${d.starts}</td><td>${d.starts?`P${d.best}`:'—'}</td><td>${d.starts?d.average.toFixed(1):'—'}</td></tr>`).join('')}</tbody></table></div>`;
+ teamEl.innerHTML=`<div class="tablewrap"><table><thead><tr><th>#</th><th>EQUIPE</th><th>PTS</th><th>VIT</th><th>PÓD</th></tr></thead><tbody>${standings.constructors.map((t,i)=>`<tr><td>${i+1}</td><td><strong>${escapeHTML(t.team)}</strong></td><td><strong>${t.points}</strong></td><td>${t.wins}</td><td>${t.podiums}</td></tr>`).join('')}</tbody></table></div>`;
  button.disabled=!next;button.textContent=next?'Ir para a próxima etapa →':'Temporada concluída';
+ if(nextSeason){nextSeason.style.display=career.calendar.seasonComplete?'inline-block':'none';nextSeason.textContent=`Iniciar temporada ${(career.season||2026)+1} →`;}
+ if(career.calendar.seasonComplete)archiveCurrentSeason();renderSeasonHistory();
 }
 function renderFinance(t){if(!t){$("cashValue").textContent=$("payrollValue").textContent=$("operatingValue").textContent="—";$("financeSummary").textContent="Assuma uma equipe para visualizar o financeiro.";$("transactions").textContent="Nenhuma movimentação.";return;}const p=payroll(),net=career.sponsorIncome-p-career.operatingCost;$("cashValue").textContent=money(career.cash);$("payrollValue").textContent=money(p);$("operatingValue").textContent=money(career.operatingCost);$("monthLabel").textContent=`Mês ${career.month}`;$("financeSummary").innerHTML=`<p>Receita de patrocinadores: <strong class="positive">+${money(career.sponsorIncome)}</strong></p><p>Folha salarial: <strong class="negative">−${money(p)}</strong></p><p>Custos operacionais: <strong class="negative">−${money(career.operatingCost)}</strong></p><hr style="border-color:var(--line)"><p>Resultado previsto do mês: <strong class="${net>=0?'positive':'negative'}">${net>=0?'+':'−'}${money(Math.abs(net))}</strong></p>`;$("transactions").innerHTML=career.transactions.length?`<div class="tablewrap"><table><thead><tr><th>MÊS</th><th>MOVIMENTAÇÃO</th><th>VALOR</th></tr></thead><tbody>${career.transactions.map(x=>`<tr><td>${x.month}</td><td>${escapeHTML(x.label)}</td><td class="${x.type==='income'?'positive':x.type==='expense'?'negative':''}">${x.type==='info'?'Info':(x.amount>0?'+':'')+money(x.amount)}</td></tr>`).join('')}</tbody></table></div>`:'Nenhuma movimentação.';}
-function renderAll(){const t=career?team(career.teamId):null;$("sideTeam").textContent=t?t.name:"Nenhuma equipe";$("sideStatus").textContent=career?`Temporada 2026 · Mês ${career.month}`:"Carreira não iniciada";$("statTeam").textContent=t?t.name:"—";$("statDrivers").textContent=t?"02":"—";$("statStatus").textContent=career?"Em andamento":"Não iniciada";$("nextStep").className=t?"":"empty";$("nextStep").innerHTML=t?`<strong>${t.name} está sob seu comando.</strong><p class="muted">Caixa disponível: ${money(career.cash)}. Gerencie os contratos, desenvolva o carro e prepare sua equipe para as corridas. Pontos: ${career.teamPoints||0}.</p><button class="btn" data-goto="finance">Abrir financeiro →</button>`:"Selecione uma equipe para assumir o comando e iniciar sua carreira.";$("nextStep").querySelector("[data-goto]")?.addEventListener("click",()=>showPage("finance"));$("garageContent").style.setProperty("--team",t?t.color:"#55c7df");if(!t){$("garageContent").className="empty";$("garageContent").textContent="Você ainda não assumiu uma equipe.";}else{$("garageContent").className="";$("garageContent").innerHTML=`<div class="selectedhero" style="--team:${t.color}"><div class="heroaccent"></div><div class="heroinside"><div><div class="eyebrow">ESCUDERIA / TEMPORADA 2026</div><h2>${t.full}</h2><p>Unidade de potência: ${t.engine}</p></div><div class="heroabbr">${t.abbr}</div></div></div><div class="grid drivercards">${career.contracts.map(d=>`<div class="card drivercard" style="--team:${t.color}"><div class="number">#${d.number}</div><div><h3>${escapeHTML(d.name)}</h3><p>${escapeHTML(d.nationality)} · Nota ${d.rating}/100</p><div class="contract-meta">Contrato: ${d.years} ano(s) · ${money(d.salary)}/ano</div></div></div>`).join("")}</div><div class="card" style="margin-top:16px"><div class="telemetry-head"><div><div class="eyebrow">CAR PERFORMANCE</div><h2>Desempenho técnico do monoposto</h2></div><span class="pill">${carScore()}/100 geral</span></div><div class="telemetry-grid">${metricCardsHTML(carMetrics(),carMetrics({aero:1,power:1,chassis:1,suspension:1}))}</div><div style="margin-top:18px"><div class="cardhead"><h2>ÚLTIMAS EVOLUÇÕES</h2><button class="btn" data-goto="development">Abrir engenharia →</button></div>${career.developmentHistory?.length?`<div class="history-list">${career.developmentHistory.slice().reverse().slice(0,4).map(h=>`<div class="history-item"><div><strong>${escapeHTML(h.name)} · Nível ${h.level}</strong><small>Mês ${h.month}</small></div><span class="metric-delta">${h.before?.overall??'—'} → ${h.after?.overall??'—'}</span></div>`).join('')}</div>`:'<div class="empty">Nenhuma melhoria concluída ainda.</div>'}</div></div>`;}renderContracts(t);renderFinance(t);renderDevelopment(t);renderCalendar();$("advanceMonthBtn").disabled=!t;}
+function renderAll(){const t=career?team(career.teamId):null;$("sideTeam").textContent=t?t.name:"Nenhuma equipe";$("sideStatus").textContent=career?`Temporada ${career.season||2026} · Mês ${career.month}`:"Carreira não iniciada";$("statTeam").textContent=t?t.name:"—";$("statDrivers").textContent=t?"02":"—";$("statStatus").textContent=career?"Em andamento":"Não iniciada";$("nextStep").className=t?"":"empty";$("nextStep").innerHTML=t?`<strong>${t.name} está sob seu comando.</strong><p class="muted">Caixa disponível: ${money(career.cash)}. Gerencie os contratos, desenvolva o carro e prepare sua equipe para as corridas. Pontos: ${career.teamPoints||0}.</p><button class="btn" data-goto="finance">Abrir financeiro →</button>`:"Selecione uma equipe para assumir o comando e iniciar sua carreira.";$("nextStep").querySelector("[data-goto]")?.addEventListener("click",()=>showPage("finance"));$("garageContent").style.setProperty("--team",t?t.color:"#55c7df");if(!t){$("garageContent").className="empty";$("garageContent").textContent="Você ainda não assumiu uma equipe.";}else{$("garageContent").className="";$("garageContent").innerHTML=`<div class="selectedhero" style="--team:${t.color}"><div class="heroaccent"></div><div class="heroinside"><div><div class="eyebrow">ESCUDERIA / TEMPORADA ${career.season||2026}</div><h2>${t.full}</h2><p>Unidade de potência: ${t.engine}</p></div><div class="heroabbr">${t.abbr}</div></div></div><div class="grid drivercards">${career.contracts.map(d=>`<div class="card drivercard" style="--team:${t.color}"><div class="number">#${d.number}</div><div><h3>${escapeHTML(d.name)}</h3><p>${escapeHTML(d.nationality)} · Nota ${d.rating}/100</p><div class="contract-meta">Contrato: ${d.years} ano(s) · ${money(d.salary)}/ano</div></div></div>`).join("")}</div><div class="card" style="margin-top:16px"><div class="telemetry-head"><div><div class="eyebrow">CAR PERFORMANCE</div><h2>Desempenho técnico do monoposto</h2></div><span class="pill">${carScore()}/100 geral</span></div><div class="telemetry-grid">${metricCardsHTML(carMetrics(),carMetrics({aero:1,power:1,chassis:1,suspension:1}))}</div><div style="margin-top:18px"><div class="cardhead"><h2>ÚLTIMAS EVOLUÇÕES</h2><button class="btn" data-goto="development">Abrir engenharia →</button></div>${career.developmentHistory?.length?`<div class="history-list">${career.developmentHistory.slice().reverse().slice(0,4).map(h=>`<div class="history-item"><div><strong>${escapeHTML(h.name)} · Nível ${h.level}</strong><small>Mês ${h.month}</small></div><span class="metric-delta">${h.before?.overall??'—'} → ${h.after?.overall??'—'}</span></div>`).join('')}</div>`:'<div class="empty">Nenhuma melhoria concluída ainda.</div>'}</div></div>`;}renderContracts(t);renderFinance(t);renderDevelopment(t);renderCalendar();$("advanceMonthBtn").disabled=!t;}
 $('garageContent').addEventListener('click',event=>{const target=event.target.closest('[data-goto]');if(target)showPage(target.dataset.goto);});
 // Delegação persistente: os cartões são recriados em cada render, então o clique
 // é tratado no contêiner estável e não depende de listeners em botões dinâmicos.
@@ -586,9 +619,10 @@ $('raceDriverSelect').addEventListener('change',()=>{if(race){const car=selected
 $('racePaceSelect').addEventListener('change',applyPace);
 $('pitCallBtn').addEventListener('click',callPit);
 $('calendarRaceBtn').addEventListener('click',()=>{ensureWeekend();showPage('race');renderWeekend();});
+$('nextSeasonBtn').addEventListener('click',()=>{if(confirm(`Arquivar a temporada ${career?.season||2026} e iniciar a próxima?`))startNextSeason();});
 $('completeSessionBtn').addEventListener('click',completeWeekendSession);
 
-load();if(career&&team(career.teamId)){selectedId=career.teamId;career.contracts ||= makeCareer(career.teamId).contracts;career.month ||= 1;career.cash ??= TEAM_BUDGET[career.teamId];career.operatingCost ??= TEAM_BUDGET[career.teamId]*.055;career.sponsorIncome ??= TEAM_BUDGET[career.teamId]*.09;career.transactions ||= [];career.development ||= {aero:1,power:1,chassis:1,suspension:1};career.developmentHistory ||= [];career.projectsDone ||= 0;career.activeProject ||= null;career.teamPoints ||= 0;career.raceHistory ||= [];career.developmentHistory ||= [];career.calendar ||= {currentRound:0,completedRounds:[],seasonComplete:false};}else career=null;if(career&&!career.calendar.seasonComplete){ensureWeekend();}renderAll();renderTeams();renderWeekend();
+load();if(career&&team(career.teamId)){selectedId=career.teamId;career.contracts ||= makeCareer(career.teamId).contracts;career.month ||= 1;career.cash ??= TEAM_BUDGET[career.teamId];career.operatingCost ??= TEAM_BUDGET[career.teamId]*.055;career.sponsorIncome ??= TEAM_BUDGET[career.teamId]*.09;career.transactions ||= [];career.development ||= {aero:1,power:1,chassis:1,suspension:1};career.developmentHistory ||= [];career.projectsDone ||= 0;career.activeProject ||= null;career.teamPoints ||= 0;career.raceHistory ||= [];career.developmentHistory ||= [];career.calendar ||= {currentRound:0,completedRounds:[],seasonComplete:false};career.seasonHistory ||= [];career.season ||= 2026;}else career=null;if(career&&!career.calendar.seasonComplete){ensureWeekend();}renderAll();renderTeams();renderWeekend();
 </script>
 </body>
 </html>
