@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F1 Team Manager Simulator · v1.2</title>
+<title>F1 Team Manager Simulator · v1.3</title>
 <style>
 :root{--bg:#090d14;--panel:#111925;--panel2:#151f2d;--line:#263346;--muted:#91a0b5;--text:#edf3fb;--accent:#e11d38;--cyan:#55c7df;--green:#48c78e;--shadow:0 18px 50px #0006}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% -20%,#1b2c43 0,transparent 45%),var(--bg);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}
@@ -191,7 +191,7 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
     <div class="race-controls-grid">
      <div><label for="raceDriverSelect">PILOTO CONTROLADO</label><select id="raceDriverSelect"><option value="0">Piloto 1</option><option value="1">Piloto 2</option></select></div>
      <div><label for="racePaceSelect">RITMO DE CORRIDA</label><select id="racePaceSelect"><option value="conservative">Conservador</option><option value="balanced" selected>Equilibrado</option><option value="push">Ataque</option></select></div>
-     <div><label for="raceTireSelect">PNEU PARA O PIT STOP</label><select id="raceTireSelect"><option value="soft">Macio</option><option value="medium" selected>Médio</option><option value="hard">Duro</option></select></div>
+     <div><label for="raceTireSelect">PNEU PARA O PIT STOP</label><select id="raceTireSelect"><option value="soft">Macio</option><option value="medium" selected>Médio</option><option value="hard">Duro</option><option value="intermediate">Intermediário</option><option value="wet">Chuva extrema</option></select></div>
      <div style="display:flex;align-items:end"><button class="btn primary" style="width:100%" id="pitCallBtn" disabled>Chamar aos boxes</button></div>
     </div>
     <div id="raceDriverStatus" style="margin-top:14px"><div class="empty">Os dados dos pilotos aparecerão durante a corrida.</div></div>
@@ -199,11 +199,12 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
    </div>
    <div class="card"><div class="cardhead"><h2>INFORMAÇÕES DA PROVA</h2><span class="eyebrow">RACE DATA</span></div>
     <div class="race-statrow"><span>Circuito</span><strong>Grand Prix Demo</strong></div>
-    <div class="race-statrow"><span>Condição</span><strong>Seco · 24 °C</strong></div>
+    <div class="race-statrow"><span>Condição</span><strong>Clima dinâmico</strong></div>
     <div class="race-statrow"><span>Distância</span><strong>12 voltas</strong></div>
     <div class="race-statrow"><span>Paradas</span><strong id="racePitCount">0</strong></div>
     <div class="race-statrow"><span>Seu melhor resultado</span><strong id="raceBestResult">—</strong></div>
    </div>
+   <div class="card"><div class="cardhead"><h2>CONTROLE DE PROVA</h2><span class="eyebrow">RACE CONTROL</span></div><div id="raceEventStatus"><div class="race-statrow"><span>Clima</span><strong>Seco</strong></div><div class="race-statrow"><span>Bandeira</span><strong>Verde</strong></div><p class="muted">Aguardando a largada.</p></div></div>
    <div class="card"><div class="cardhead"><h2>LEITURA DO CARRO</h2><span class="eyebrow">TELEMETRIA</span></div>
     <div class="statlabel">DESGASTE DOS PNEUS</div><div class="race-meter"><span id="tireMeter"></span></div><div class="race-statrow"><span id="tireLabel">—</span><strong id="tireValue">—</strong></div>
     <div class="statlabel" style="margin-top:12px">COMBUSTÍVEL</div><div class="race-meter"><span id="fuelMeter"></span></div><div class="race-statrow"><span>Combustível restante</span><strong id="fuelValue">—</strong></div>
@@ -398,6 +399,8 @@ const RACE_DRIVERS=[
 ];
 const TRACK_POINTS=[[.12,.34],[.18,.18],[.36,.12],[.55,.16],[.72,.13],[.86,.23],[.91,.40],[.86,.57],[.73,.65],[.64,.80],[.45,.84],[.29,.77],[.17,.67],[.10,.51]];
 let race=null,raceTimer=null,raceLastTick=0,raceSpeed=1;
+const WEATHER_LABELS={dry:"Seco",cloudy:"Nublado",lightRain:"Chuva leve",heavyRain:"Chuva forte"};
+const FLAG_LABELS={green:"Verde",yellow:"Amarela",vsc:"Virtual Safety Car",safety:"Safety Car",red:"Vermelha"};
 function trackPoint(progress,lane=0){const p=((progress%1)+1)%1,scaled=p*TRACK_POINTS.length,i=Math.floor(scaled),f=scaled-i,a=TRACK_POINTS[i],b=TRACK_POINTS[(i+1)%TRACK_POINTS.length];const x=(a[0]+(b[0]-a[0])*f)*900,y=(a[1]+(b[1]-a[1])*f)*520;const dx=(b[0]-a[0])*900,dy=(b[1]-a[1])*520,len=Math.hypot(dx,dy)||1;return {x:x-(dy/len)*lane,y:y+(dx/len)*lane,angle:Math.atan2(dy,dx)};}
 function drawRaceTrack(){const canvas=$('raceCanvas');if(!canvas)return;const ctx=canvas.getContext('2d');ctx.clearRect(0,0,900,520);ctx.fillStyle='#10251e';ctx.fillRect(0,0,900,520);
  const path=()=>{ctx.beginPath();TRACK_POINTS.forEach((p,i)=>{const x=p[0]*900,y=p[1]*520;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.closePath();};
@@ -467,17 +470,17 @@ function createRace(){
  stopRaceTimer();const event=currentGrandPrix();if(!event){toast('Temporada concluída!');return;}
  const grid=career.weekend.gridOrder.length===RACE_DRIVERS.length?career.weekend.gridOrder:RACE_DRIVERS.map(d=>d.name);
  const ordered=grid.map(name=>RACE_DRIVERS.find(d=>d.name===name)).filter(Boolean);
- race={round:career.calendar.currentRound,eventId:event.id,cars:ordered.map((d,i)=>({ ...d,grid:i,progress:-i*.002,wear:0.04,fuel:100,tire:'medium',pace:'balanced',pitRequested:false,pitTimer:0,pitStops:0,finished:false,finishTime:null,driverIndex:d.teamId===career.teamId?RACE_DRIVERS.filter(x=>x.teamId===career.teamId).findIndex(x=>x.name===d.name):-1})),elapsed:0,running:false,finished:false,selected:0,lastMessage:'Luzes apagadas em breve.',lastSnapshotAt:0};
- const snapshot=career.weekend?.raceSnapshot;if(snapshot&&snapshot.round===race.round&&snapshot.eventId===race.eventId&&snapshot.cars.length===22){race.elapsed=snapshot.elapsed;race.cars.forEach(car=>{const saved=snapshot.cars.find(x=>x.name===car.name);if(saved)Object.assign(car,{progress:saved.progress,wear:saved.wear,fuel:saved.fuel,tire:saved.tire,pace:saved.pace,pitRequested:saved.pitRequested,pitTimer:saved.pitTimer,pitStops:saved.pitStops,finished:saved.finished,finishTime:saved.finishTime,requestedTire:saved.requestedTire,nextTire:saved.nextTire});});race.lastSnapshotAt=Math.floor(race.elapsed/5000);}
- $('raceWorkspace').style.display='grid';$('raceResult').style.display='none';$('raceStartBtn').disabled=false;$('raceStartBtn').textContent='▶ Iniciar corrida';$('racePauseBtn').disabled=true;$('raceDriverSelect').innerHTML=RACE_DRIVERS.filter(x=>x.teamId===career.teamId).map((d,i)=>`<option value="${i}">${d.name}</option>`).join('');$('racePaceSelect').value='balanced';$('raceTireSelect').value='medium';raceSpeed=1;$('speed1Btn').classList.add('selected');$('speed2Btn').classList.remove('selected');$('racePitCount').textContent='0';$('raceBestResult').textContent=career.raceHistory?.length?`P${Math.min(...career.raceHistory[0].positions.map(x=>x.position))}`:'—';raceMessage(`Grid formado para ${event.name}. Prepare a estratégia e inicie a corrida.`);$('raceStatus').textContent=`ETAPA ${race.round+1} · GRID FORMADO`;const raceInfo=document.querySelector('#race .race-side .card .race-statrow strong');if(raceInfo)raceInfo.textContent=event.circuit;renderRace();drawRaceTrack();
+ race={round:career.calendar.currentRound,eventId:event.id,cars:ordered.map((d,i)=>({ ...d,grid:i,progress:-i*.002,wear:0.04,fuel:100,tire:'medium',pace:'balanced',pitRequested:false,pitTimer:0,pitStops:0,finished:false,retired:false,damage:0,finishTime:null,driverIndex:d.teamId===career.teamId?RACE_DRIVERS.filter(x=>x.teamId===career.teamId).findIndex(x=>x.name===d.name):-1})),elapsed:0,running:false,finished:false,selected:0,lastMessage:'Luzes apagadas em breve.',lastSnapshotAt:0,weather:'dry',trackWetness:0,flag:'green',flagEndsAt:0,nextEventAt:14000+Math.random()*9000,redFlag:false,redFlagCount:0,eventText:'Condições estáveis. Boa corrida!',eventLog:[]};
+ const snapshot=career.weekend?.raceSnapshot;if(snapshot&&snapshot.round===race.round&&snapshot.eventId===race.eventId&&snapshot.cars.length===22){race.elapsed=snapshot.elapsed;Object.assign(race,{weather:snapshot.weather||'dry',trackWetness:snapshot.trackWetness||0,flag:snapshot.flag||'green',flagEndsAt:snapshot.flagEndsAt||0,nextEventAt:snapshot.nextEventAt||race.elapsed+15000,redFlag:!!snapshot.redFlag,redFlagCount:snapshot.redFlagCount||0,eventText:snapshot.eventText||'Corrida retomada.'});race.cars.forEach(car=>{const saved=snapshot.cars.find(x=>x.name===car.name);if(saved)Object.assign(car,{progress:saved.progress,wear:saved.wear,fuel:saved.fuel,tire:saved.tire,pace:saved.pace,pitRequested:saved.pitRequested,pitTimer:saved.pitTimer,pitStops:saved.pitStops,finished:saved.finished,retired:!!saved.retired,damage:saved.damage||0,finishTime:saved.finishTime,requestedTire:saved.requestedTire,nextTire:saved.nextTire});});race.lastSnapshotAt=Math.floor(race.elapsed/5000);}
+ $('raceWorkspace').style.display='grid';$('raceResult').style.display='none';$('raceStartBtn').disabled=false;$('raceStartBtn').textContent=race.redFlag?'▶ Relargar corrida':'▶ Iniciar corrida';$('racePauseBtn').disabled=true;$('raceDriverSelect').innerHTML=RACE_DRIVERS.filter(x=>x.teamId===career.teamId).map((d,i)=>`<option value="${i}">${d.name}</option>`).join('');$('racePaceSelect').value='balanced';$('raceTireSelect').value='medium';raceSpeed=1;$('speed1Btn').classList.add('selected');$('speed2Btn').classList.remove('selected');$('racePitCount').textContent='0';$('raceBestResult').textContent=career.raceHistory?.length?`P${Math.min(...career.raceHistory[0].positions.map(x=>x.position))}`:'—';raceMessage(`Grid formado para ${event.name}. Prepare a estratégia e inicie a corrida.`);$('raceStatus').textContent=`ETAPA ${race.round+1} · GRID FORMADO`;const raceInfo=document.querySelector('#race .race-side .card .race-statrow strong');if(raceInfo)raceInfo.textContent=event.circuit;renderRace();drawRaceTrack();
 }
 function stopRaceTimer(){if(raceTimer){clearInterval(raceTimer);raceTimer=null;}}
 function saveRaceSnapshot(){
  if(!career||!race||race.finished||!career.weekend||career.weekend.round!==race.round)return;
- career.weekend.raceSnapshot={round:race.round,eventId:race.eventId,elapsed:race.elapsed,cars:race.cars.map(c=>({name:c.name,progress:c.progress,wear:c.wear,fuel:c.fuel,tire:c.tire,pace:c.pace,pitRequested:c.pitRequested,pitTimer:c.pitTimer,pitStops:c.pitStops,finished:c.finished,finishTime:c.finishTime,requestedTire:c.requestedTire||null,nextTire:c.nextTire||null}))};
+ career.weekend.raceSnapshot={round:race.round,eventId:race.eventId,elapsed:race.elapsed,weather:race.weather,trackWetness:race.trackWetness,flag:race.flag,flagEndsAt:race.flagEndsAt,nextEventAt:race.nextEventAt,redFlag:race.redFlag,redFlagCount:race.redFlagCount,eventText:race.eventText,cars:race.cars.map(c=>({name:c.name,progress:c.progress,wear:c.wear,fuel:c.fuel,tire:c.tire,pace:c.pace,pitRequested:c.pitRequested,pitTimer:c.pitTimer,pitStops:c.pitStops,finished:c.finished,retired:c.retired,damage:c.damage,finishTime:c.finishTime,requestedTire:c.requestedTire||null,nextTire:c.nextTire||null}))};
  save();
 }
-function startRace(){if(!race)createRace();if(!race||race.finished)return;if(!race.running){race.running=true;raceLastTick=performance.now();raceTimer=setInterval(tickRace,100);$('raceStartBtn').disabled=true;$('racePauseBtn').disabled=false;$('raceStatus').textContent='CORRIDA EM ANDAMENTO';raceMessage('Largada! Acompanhe o ritmo e monitore os pneus.');}}
+function startRace(){if(!race)createRace();if(!race||race.finished)return;if(!race.running){if(race.redFlag){race.redFlag=false;race.flag='green';race.eventText='Relargada após bandeira vermelha.';race.nextEventAt=race.elapsed+18000;raceMessage('Relargada! A corrida foi retomada após a bandeira vermelha.');}else if(race.elapsed===0)raceMessage('Largada! Acompanhe o ritmo e monitore os pneus.');race.running=true;raceLastTick=performance.now();raceTimer=setInterval(tickRace,100);$('raceStartBtn').disabled=true;$('raceStartBtn').textContent='▶ Iniciar corrida';$('racePauseBtn').disabled=false;$('raceStatus').textContent='CORRIDA EM ANDAMENTO';renderRace();}}
 function pauseRace(){if(!race||!race.running)return;race.running=false;stopRaceTimer();saveRaceSnapshot();$('raceStartBtn').disabled=false;$('raceStartBtn').textContent='▶ Retomar corrida';$('racePauseBtn').disabled=true;$('raceStatus').textContent='CORRIDA PAUSADA';raceMessage('Simulação pausada. Ajuste sua estratégia antes de retomar.');}
 function raceCarTechnicalFactor(car){
  const stats=car.teamId===career?.teamId?carMetrics():carMetrics({aero:1,power:1,chassis:1,suspension:1},car.teamId);
@@ -487,32 +490,68 @@ function raceCarTechnicalFactor(car){
  if(car.teamId===career?.teamId)factor+=career.weekend?.setupBonus||0;
  return {factor:Math.max(.94,Math.min(1.075,factor)),tireFactor:Math.max(.88,Math.min(1.08,1-(stats.tires-82)*0.0022)),fuelFactor:Math.max(.90,Math.min(1.08,1-(stats.efficiency-82)*0.0018))};
 }
-function tickRace(){if(!race||!race.running)return;const now=performance.now(),dt=Math.min(250,now-raceLastTick)*raceSpeed;raceLastTick=now;race.elapsed+=dt;
- const snapshotBucket=Math.floor(race.elapsed/5000);if(snapshotBucket>(race.lastSnapshotAt||0)){race.lastSnapshotAt=snapshotBucket;saveRaceSnapshot();}
- race.cars.forEach(car=>{if(car.finished)return;if(car.pitTimer>0){car.pitTimer-=dt;if(car.pitTimer<=0){car.pitTimer=0;car.wear=.035;car.fuel=Math.min(100,car.fuel+28);car.tire=car.nextTire||'medium';car.nextTire=null;raceMessage(`${car.name} voltou à pista com pneus ${tireName(car.tire).toLowerCase()}.`);}return;}
- const paceFactor=car.pace==='push'?1.045:car.pace==='conservative' ? .965 : 1;const tireFactor=car.tire==='soft'?1.035:car.tire==='hard'?.982:1;const wearPenalty=1-Math.max(0,car.wear-.25)*.16;const technical=raceCarTechnicalFactor(car);const driverFactor=.965+(car.rating/100)*.065;const carFactor=driverFactor*technical.factor;const variation=1+Math.sin(race.elapsed/3700+car.grid*1.7)*.004;const fuelPenalty=.98+car.fuel*.0002;const speed=paceFactor*tireFactor*wearPenalty*carFactor*variation*fuelPenalty;
- const oldLap=Math.floor(car.progress);car.progress+=dt/RACE_LAP_MS*speed;const newLap=Math.floor(car.progress);const lapsDone=Math.max(0,newLap-oldLap);car.wear=Math.min(1,car.wear+dt/RACE_LAP_MS*(car.tire==='soft' ? .105 : car.tire==='hard' ? .045 : .068)*technical.tireFactor);car.fuel=Math.max(0,car.fuel-dt/RACE_LAP_MS*5.2*technical.fuelFactor);
- if(car.pitRequested&&newLap>oldLap){car.pitRequested=false;car.pitTimer=4200;car.pitStops++;car.nextTire=car.requestedTire||'medium';car.requestedTire=null;raceMessage(`${car.name} entrou nos boxes para trocar pneus.`);}
- if(car.progress>=RACE_LAPS){car.finished=true;car.finishTime=race.elapsed;}
+function setRaceEvent(flag,message,duration=9000){
+ race.flag=flag;race.flagEndsAt=flag==='green'?0:race.elapsed+duration;race.eventText=message;
+ race.eventLog.unshift({time:race.elapsed,message});race.eventLog=race.eventLog.slice(0,8);raceMessage(message);
+}
+function triggerRaceEvent(){
+ const roll=Math.random();
+ if(roll<.16){race.weather=race.weather==='dry'||race.weather==='cloudy'?'lightRain':'heavyRain';race.trackWetness=Math.max(.35,race.trackWetness);setRaceEvent('yellow','Chuva começou a atingir o circuito. Avalie os pneus intermediários.',7000);return;}
+ if(roll<.23&&race.weather!=='dry'){race.weather='cloudy';race.trackWetness=Math.max(0,race.trackWetness-.25);setRaceEvent('green','A chuva diminuiu. A pista começa a secar.',6500);return;}
+ if(roll<.39){setRaceEvent('safety','SAFETY CAR: velocidade reduzida. Evite riscos e considere a janela de pit stop.',10000);return;}
+ if(roll<.55){setRaceEvent('vsc','VIRTUAL SAFETY CAR: ritmo controlado em todo o circuito.',7500);return;}
+ if(roll<.73){setRaceEvent('yellow','Bandeira amarela: setor com incidente. Proibido acelerar neste trecho.',6000);return;}
+ const active=race.cars.filter(c=>!c.finished&&!c.retired&&c.pitTimer<=0);
+ if(!active.length)return;
+ const car=active[Math.floor(Math.random()*active.length)];
+ if(roll>.965&&race.redFlagCount<1){car.damage=Math.min(100,car.damage+45);car.wear=Math.min(1,car.wear+.18);race.redFlagCount++;race.redFlag=true;race.running=false;stopRaceTimer();setRaceEvent('red',`BANDEIRA VERMELHA: incidente envolvendo ${car.name}. Corrida interrompida; pressione retomar para a relargada.`,0);$('raceStartBtn').disabled=false;$('raceStartBtn').textContent='▶ Relargar corrida';$('racePauseBtn').disabled=true;$('raceStatus').textContent='BANDEIRA VERMELHA';saveRaceSnapshot();return;}
+ if(roll>.91){car.retired=true;car.finished=true;car.finishTime=Number.MAX_SAFE_INTEGER;car.damage=100;setRaceEvent(race.flag==='green'?'yellow':race.flag,`${car.name} abandonou após uma falha mecânica ou dano.`,6500);return;}
+ car.progress=Math.max(0,car.progress-.035);car.wear=Math.min(1,car.wear+.12);car.damage=Math.min(100,car.damage+18);setRaceEvent('yellow',`${car.name} rodou e perdeu tempo. A equipe avalia danos no carro.`,6000);
+}
+function updateRaceControl(dt){
+ if(race.flag!=='green'&&race.flag!=='red'&&race.elapsed>=race.flagEndsAt){setRaceEvent('green','Bandeira verde: pista liberada.',1);}
+ if(race.weather==='lightRain')race.trackWetness=Math.min(.72,race.trackWetness+dt/90000);
+ else if(race.weather==='heavyRain')race.trackWetness=Math.min(1,race.trackWetness+dt/65000);
+ else race.trackWetness=Math.max(0,race.trackWetness-dt/120000);
+ if(race.elapsed>=race.nextEventAt&&race.flag!=='red'&&!race.redFlag){triggerRaceEvent();race.nextEventAt=race.elapsed+19000+Math.random()*18000;}
+}
+function tickRace(){
+ if(!race||!race.running)return;
+ const now=performance.now(),dt=Math.min(250,now-raceLastTick)*raceSpeed;raceLastTick=now;race.elapsed+=dt;updateRaceControl(dt);
+ if(race.redFlag){renderRace();saveRaceSnapshot();return;}
+ const flagFactor=race.flag==='safety'?.48:race.flag==='vsc'?.68:race.flag==='yellow'?.78:1;
+ race.cars.forEach(car=>{
+  if(car.finished)return;
+  if(car.pitTimer>0){car.pitTimer-=dt;if(car.pitTimer<=0){car.pitTimer=0;car.wear=.035;car.fuel=Math.min(100,car.fuel+28);car.tire=car.nextTire||'medium';car.nextTire=null;raceMessage(`${car.name} voltou à pista com pneus ${tireName(car.tire).toLowerCase()}.`);}return;}
+  const paceFactor=car.pace==='push'?1.045:car.pace==='conservative'?.965:1;
+  let tireFactor=car.tire==='soft'?1.035:car.tire==='hard'?.982:1;
+  if(race.trackWetness>.25){const wetSuitability=car.tire==='wet'?1.035:car.tire==='intermediate'?1.02:1-(race.trackWetness*(car.tire==='soft'?.30:.38));tireFactor*=wetSuitability;}
+  else if(car.tire==='wet')tireFactor*=.94;else if(car.tire==='intermediate')tireFactor*=.975;
+  const wearPenalty=1-Math.max(0,car.wear-.25)*.16;const technical=raceCarTechnicalFactor(car);const driverFactor=.965+(car.rating/100)*.065;const damagePenalty=1-(car.damage||0)*.0011;const carFactor=driverFactor*technical.factor*damagePenalty;const variation=1+Math.sin(race.elapsed/3700+car.grid*1.7)*.004;const fuelPenalty=.98+car.fuel*.0002;const speed=paceFactor*tireFactor*wearPenalty*carFactor*variation*fuelPenalty*flagFactor;
+  const oldLap=Math.floor(car.progress);car.progress+=dt/RACE_LAP_MS*speed;const newLap=Math.floor(car.progress);car.wear=Math.min(1,car.wear+dt/RACE_LAP_MS*(car.tire==='soft'?.105:car.tire==='hard'?.045:car.tire==='wet'?.075:car.tire==='intermediate'?.07:.068)*technical.tireFactor);car.fuel=Math.max(0,car.fuel-dt/RACE_LAP_MS*5.2*technical.fuelFactor);
+  if(car.pitRequested&&newLap>oldLap){car.pitRequested=false;car.pitTimer=4200;car.pitStops++;car.nextTire=car.requestedTire||'medium';car.requestedTire=null;raceMessage(`${car.name} entrou nos boxes para trocar pneus.`);}
+  if(car.progress>=RACE_LAPS){car.finished=true;car.finishTime=race.elapsed;}
  });
- if(race.cars.every(c=>c.finished)){finishRace();return;}renderRace();drawRaceTrack();}
-function tireName(t){return ({soft:'Macio',medium:'Médio',hard:'Duro'})[t]||'Médio';}
+ const snapshotBucket=Math.floor(race.elapsed/5000);if(snapshotBucket>(race.lastSnapshotAt||0)){race.lastSnapshotAt=snapshotBucket;saveRaceSnapshot();}
+ if(race.cars.every(c=>c.finished)){finishRace();return;}renderRace();drawRaceTrack();
+}
+function tireName(t){return ({soft:'Macio',medium:'Médio',hard:'Duro',intermediate:'Intermediário',wet:'Chuva extrema'})[t]||'Médio';}
 function selectedRaceCar(){if(!race)return null;const own=race.cars.filter(c=>c.teamId===career?.teamId);return own[Number($('raceDriverSelect').value)||0]||null;}
 function callPit(){const car=selectedRaceCar();if(!race?.running||!car||car.finished)return;if(car.pitRequested||car.pitTimer>0){raceMessage(`${car.name} já tem uma parada programada ou está nos boxes.`);return;}car.pitRequested=true;car.requestedTire=$('raceTireSelect').value;raceMessage(`Ordem enviada: ${car.name} vai parar na próxima passagem pela linha de chegada.`);renderRace();}
 function applyPace(){const car=selectedRaceCar();if(!car)return;car.pace=$('racePaceSelect').value;raceMessage(`Ritmo de ${car.name}: ${car.pace==='push'?'ataque':car.pace==='conservative'?'conservador':'equilibrado'}.`);renderRace();}
-function renderRace(){if(!race)return;const cars=[...race.cars].sort((a,b)=>b.progress-a.progress);const own=selectedRaceCar();const lap=Math.min(RACE_LAPS,Math.max(1,Math.floor((own?.progress||0))+1));$('raceLap').textContent=`${lap} / ${RACE_LAPS}`;$('raceClock').textContent=formatRaceTime(race.elapsed);$('raceRunning').textContent=race.cars.filter(c=>!c.finished).length;$('racePitCount').textContent=race.cars.filter(c=>c.teamId===career.teamId).reduce((a,c)=>a+c.pitStops,0);$('raceLeaderboard').innerHTML=`<table><thead><tr><th>POS</th><th>PILOTO</th><th>EQUIPE</th><th>VOLTA</th><th>PNEU</th></tr></thead><tbody>${cars.map((c,i)=>`<tr class="${c.teamId===career.teamId?'own-car':''}" style="--team:${c.color}"><td><strong>${i+1}</strong></td><td>${c.name}${c.teamId===career.teamId?' ★':''}</td><td>${c.team}</td><td>${Math.min(RACE_LAPS,Math.max(0,Math.floor(c.progress)))}/${RACE_LAPS}</td><td>${tireName(c.tire)}</td></tr>`).join('')}</tbody></table>`;
- if(own){$('raceDriverStatus').innerHTML=`<div class="race-statrow"><span>${own.name}</span><strong>${own.finished?'Finalizado':`P${cars.findIndex(c=>c===own)+1}`}</strong></div><div class="race-statrow"><span>Ritmo</span><strong>${own.pace==='push'?'Ataque':own.pace==='conservative'?'Conservador':'Equilibrado'}</strong></div><div class="race-statrow"><span>Pneu atual</span><strong>${tireName(own.tire)}</strong></div><div class="race-statrow"><span>Paradas</span><strong>${own.pitStops}</strong></div>`;$('tireMeter').style.width=`${Math.max(0,100-own.wear*100)}%`;$('tireValue').textContent=`${Math.round(own.wear*100)}% usado`;$('tireLabel').textContent=tireName(own.tire);$('fuelMeter').style.width=`${own.fuel}%`;$('fuelValue').textContent=`${Math.round(own.fuel)}%`;$('pitCallBtn').disabled=!race.running||own.finished||own.pitRequested||own.pitTimer>0;} }
+function renderRace(){if(!race)return;const cars=[...race.cars].sort((a,b)=>(a.retired?1:0)-(b.retired?1:0)||b.progress-a.progress);const own=selectedRaceCar();const lap=Math.min(RACE_LAPS,Math.max(1,Math.floor((own?.progress||0))+1));$('raceLap').textContent=`${lap} / ${RACE_LAPS}`;$('raceClock').textContent=formatRaceTime(race.elapsed);$('raceRunning').textContent=race.cars.filter(c=>!c.finished).length;$('racePitCount').textContent=race.cars.filter(c=>c.teamId===career.teamId).reduce((a,c)=>a+c.pitStops,0);$('raceLeaderboard').innerHTML=`<table><thead><tr><th>POS</th><th>PILOTO</th><th>EQUIPE</th><th>VOLTA</th><th>PNEU</th><th>STATUS</th></tr></thead><tbody>${cars.map((c,i)=>`<tr class="${c.teamId===career.teamId?'own-car':''}" style="--team:${c.color}"><td><strong>${i+1}</strong></td><td>${c.name}${c.teamId===career.teamId?' ★':''}</td><td>${c.team}</td><td>${Math.min(RACE_LAPS,Math.max(0,Math.floor(c.progress)))}/${RACE_LAPS}</td><td>${tireName(c.tire)}</td><td>${c.retired?'ABANDONO':c.finished?'FINALIZADO':'EM PROVA'}</td></tr>`).join('')}</tbody></table>`;
+ if(own){$('raceDriverStatus').innerHTML=`<div class="race-statrow"><span>${own.name}</span><strong>${own.retired?'Abandono':own.finished?'Finalizado':`P${cars.findIndex(c=>c===own)+1}`}</strong></div><div class="race-statrow"><span>Ritmo</span><strong>${own.pace==='push'?'Ataque':own.pace==='conservative'?'Conservador':'Equilibrado'}</strong></div><div class="race-statrow"><span>Pneu atual</span><strong>${tireName(own.tire)}</strong></div><div class="race-statrow"><span>Paradas</span><strong>${own.pitStops}</strong></div>`;$('tireMeter').style.width=`${Math.max(0,100-own.wear*100)}%`;$('tireValue').textContent=`${Math.round(own.wear*100)}% usado`;$('tireLabel').textContent=tireName(own.tire);$('fuelMeter').style.width=`${own.fuel}%`;$('fuelValue').textContent=`${Math.round(own.fuel)}%`;$('pitCallBtn').disabled=!race.running||own.finished||own.pitRequested||own.pitTimer>0;}const weather=WEATHER_LABELS[race.weather]||'Seco';const flag=FLAG_LABELS[race.flag]||'Verde';const recommendation=race.trackWetness>.68?'Recomendação: pneus de chuva extrema.':race.trackWetness>.22?'Recomendação: pneus intermediários.':race.weather==='dry'?'Recomendação: pneus slick.':'Acompanhe a evolução da pista.';$('raceEventStatus').innerHTML=`<div class="race-statrow"><span>Clima</span><strong>${weather}</strong></div><div class="race-statrow"><span>Condição da pista</span><strong>${Math.round(race.trackWetness*100)}% molhada</strong></div><div class="race-statrow"><span>Bandeira</span><strong>${flag}</strong></div><p class="muted">${escapeHTML(race.eventText||'Pista liberada.')}<br>${recommendation}</p>`; }
 function formatRaceTime(ms){const s=Math.floor(ms/1000);return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
 function finishRace(){
  if(!race||race.finished)return;
  race.running=false;race.finished=true;stopRaceTimer();
- const cars=[...race.cars].sort((a,b)=>a.finishTime-b.finishTime);
+ const cars=[...race.cars].sort((a,b)=>(a.retired?1:0)-(b.retired?1:0)||a.finishTime-b.finishTime);
  const points=[25,18,15,12,10,8,6,4,2,1];
- const driverResults=cars.map((car,index)=>({name:car.name,teamId:car.teamId,team:car.team,position:index+1,points:points[index]||0}));
+ const driverResults=cars.map((car,index)=>({name:car.name,teamId:car.teamId,team:car.team,position:index+1,status:car.retired?'Abandono':'Finalizado',points:car.retired?0:(points[index]||0)}));
  const own=cars.filter(c=>c.teamId===career.teamId);
  const earned=driverResults.filter(x=>x.teamId===career.teamId).reduce((sum,x)=>sum+x.points,0);
  career.teamPoints=(career.teamPoints||0)+earned;
- const result={season:career.season||2026,round:race.round,circuit:race.eventId,grandPrix:race.eventId,month:career.month,poleDriver:career.weekend?.qualifying?.Q3?.[0]?.name||career.weekend?.gridOrder?.[0]||null,positions:own.map(c=>({name:c.name,position:cars.indexOf(c)+1})),driverResults,points:earned,elapsed:race.elapsed};
+ const result={season:career.season||2026,round:race.round,circuit:race.eventId,grandPrix:race.eventId,month:career.month,poleDriver:career.weekend?.qualifying?.Q3?.[0]?.name||career.weekend?.gridOrder?.[0]||null,positions:own.map(c=>({name:c.name,position:cars.indexOf(c)+1,status:c.retired?'Abandono':'Finalizado'})),driverResults,points:earned,elapsed:race.elapsed};
  career.raceHistory=career.raceHistory||[];
  if(career.weekend)career.weekend.raceSnapshot=null;
  if(!career.calendar)career.calendar={currentRound:0,completedRounds:[],seasonComplete:false};
@@ -525,7 +564,7 @@ function finishRace(){
  }
  save();$('raceStartBtn').disabled=true;$('racePauseBtn').disabled=true;$('raceStatus').textContent='BANDEIRADA';$('raceRunning').textContent='0';$('raceBestResult').textContent=own.length?`P${Math.min(...own.map(c=>cars.indexOf(c)+1))}`:'—';
  const event=SEASON_CALENDAR[race.round];$('raceResult').style.display='block';
- $('raceResult').innerHTML=`<strong>🏁 ${escapeHTML(event?.name||'Corrida')} finalizado</strong><p>Seus pilotos terminaram em ${own.map(c=>`${escapeHTML(c.name)}: P${cars.indexOf(c)+1}`).join(' · ')}.</p><p>Pontos conquistados nesta etapa: <strong>${earned}</strong> · Total da equipe: <strong>${career.teamPoints}</strong>.</p><p>${career.calendar.seasonComplete?'🏆 Temporada concluída! Consulte a classificação final no calendário.':`Próxima etapa: ${escapeHTML(SEASON_CALENDAR[career.calendar.currentRound]?.name||'Temporada concluída')}.`}</p>`;
+ $('raceResult').innerHTML=`<strong>🏁 ${escapeHTML(event?.name||'Corrida')} finalizado</strong><p>Seus pilotos terminaram em ${own.map(c=>`${escapeHTML(c.name)}: ${c.retired?'Abandono':`P${cars.indexOf(c)+1}`}`).join(' · ')}.</p><p>Pontos conquistados nesta etapa: <strong>${earned}</strong> · Total da equipe: <strong>${career.teamPoints}</strong>.</p><p>${career.calendar.seasonComplete?'🏆 Temporada concluída! Consulte a classificação final no calendário.':`Próxima etapa: ${escapeHTML(SEASON_CALENDAR[career.calendar.currentRound]?.name||'Temporada concluída')}.`}</p>`;
  raceMessage('Bandeirada! Resultado e pontuação registrados no campeonato.');renderRace();renderWeekend();renderCalendar();renderAll();
 }
 
