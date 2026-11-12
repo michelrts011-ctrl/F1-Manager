@@ -1,12 +1,13 @@
 # Log de atualizações
 
-## v2.1.0
-- Adicionada inteligência artificial autônoma para as 10 equipes rivais.
-- Criados perfis estratégicos distintos para cada escuderia.
-- Implementada gestão mensal de orçamento, folha salarial e custos operacionais das equipes rivais.
-- Adicionadas decisões autônomas de pesquisa e desenvolvimento técnico.
-- Implementadas renovações e ajustes de contratos dos pilotos ao fim de cada ciclo anual.
-- Adicionadas contratações e substituições estratégicas de pilotos no mercado de agentes livres.
-- Criado painel de acompanhamento das equipes rivais, força estimada, caixa, desenvolvimento e histórico de decisões.
-- O desenvolvimento técnico das equipes rivais agora influencia treinos, classificação e ritmo de corrida.
-- Adicionada migração automática dos dados de IA em carreiras anteriores, sem apagar o progresso existente.
+## v2.2.0
+- Reformulado o centro de desenvolvimento como sistema de engenharia avançada.
+- Adicionada a área técnica de refrigeração, com impacto em eficiência e confiabilidade.
+- Introduzidos seis indicadores de telemetria: velocidade, curvas, estabilidade, eficiência, gestão de pneus e confiabilidade.
+- Implementados projetos simultâneos, com limite inicial de duas pesquisas.
+- Adicionados prazos distintos de pesquisa e progresso mensal persistente.
+- Incorporados compromissos técnicos para equilibrar ganhos entre os componentes.
+- Integrado o nível de confiabilidade à avaliação de desempenho nas corridas.
+- Ampliada a pesquisa autônoma das equipes rivais para incluir refrigeração.
+- Preservada a compatibilidade com carreiras 2.1.0 e projetos antigos em andamento.
+- Mantido o salvamento automático e a chave de armazenamento das versões anteriores.
