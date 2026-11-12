@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F1 Team Manager Simulator · v2.2.0</title>
+<title>F1 Team Manager Simulator · v2.3.0</title>
 <style>
 :root{--bg:#090d14;--panel:#111925;--panel2:#151f2d;--line:#263346;--muted:#91a0b5;--text:#edf3fb;--accent:#e11d38;--cyan:#55c7df;--green:#48c78e;--shadow:0 18px 50px #0006}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% -20%,#1b2c43 0,transparent 45%),var(--bg);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}
@@ -84,12 +84,15 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
 
 .market-card{display:flex;flex-direction:column;gap:12px;min-width:0}.market-card h3{margin:0;font-size:14px}.market-meta{font-size:11px;color:var(--muted)}.market-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:auto}.market-controls select{min-width:110px;max-width:100%;background:#0d1724;color:var(--text);border:1px solid var(--line);border-radius:7px;padding:9px}.market-rating{font-size:24px;font-weight:850;color:var(--cyan)}.market-empty{padding:18px;color:var(--muted);border:1px dashed var(--line);border-radius:9px;text-align:center}
 @media(max-width:720px){#market .stats{grid-template-columns:1fr}.market-controls select{flex:1}}
+
+.regulation-rule{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--panel)}
+#regulations .positive{font-weight:750;color:#48c78e}
 </style>
 </head>
 <body>
 <header class="topbar">
  <div class="brand"><div class="brandmark">F1</div><div>TEAM MANAGER<small>RACE OPERATIONS SIMULATOR</small></div></div>
- <div class="topright"><span id="seasonLabel">SEASON 2026</span><span class="version">BUILD 2.2.0</span></div>
+ <div class="topright"><span id="seasonLabel">SEASON 2026</span><span class="version">BUILD 2.3.0</span></div>
 </header>
 <div class="layout">
 <aside>
@@ -104,6 +107,7 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
   <button data-page="rivals"><i>◉</i> Equipes rivais</button>
   <button data-page="finance"><i>＄</i> Financeiro</button>
   <button data-page="development"><i>⌁</i> Engenharia avançada</button>
+  <button data-page="regulations"><i>§</i> Regulamentos técnicos</button>
   <button data-page="calendar"><i>▦</i> Calendário</button>
   <button data-page="race"><i>🏁</i> Central de corrida</button>
  </nav>
@@ -123,7 +127,7 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
   <div class="card"><div class="cardhead"><h2>PRÓXIMO PASSO</h2><span class="eyebrow">GESTÃO</span></div><div id="nextStep" class="empty">Selecione uma equipe para assumir o comando e iniciar sua carreira.</div></div>
   <div class="card"><div class="cardhead"><h2>GRADE 2026</h2><span class="eyebrow">GRID COMPLETO</span></div><p style="font-size:31px;font-weight:850;margin:0">11 <span class="muted" style="font-size:13px">equipes</span></p><p class="muted" style="font-size:12px">11 equipes e 22 pilotos no grid simulado da temporada.</p><button class="btn" data-goto="teams">Ver equipes e pilotos →</button></div>
  </div>
- <div class="footer">F1 TEAM MANAGER SIMULATOR · BUILD 2.2.0 · ENGENHARIA AVANÇADA</div>
+ <div class="footer">F1 TEAM MANAGER SIMULATOR · BUILD 2.3.0 · REGULAMENTOS TÉCNICOS</div>
 </section>
 <section id="teams" class="section">
  <div class="pagehead"><div><div class="eyebrow">CONSTRUTORES / 2026</div><h1>Selecione sua equipe</h1><p class="sub">Escolha uma das 11 escuderias para iniciar sua trajetória.</p></div><button class="btn primary" id="takeTeamBtn" disabled>Assumir equipe</button></div>
@@ -182,6 +186,14 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
  <div id="developmentTelemetry" class="card" style="margin-bottom:16px"><div class="empty">Os dados técnicos aparecerão após assumir uma equipe.</div></div>
  <div id="developmentContent" class="grid devgrid"><div class="empty">Assuma uma equipe para acessar a engenharia.</div></div>
  <div id="developmentHistoryPanel" class="card" style="margin-top:16px"><div class="empty">O histórico será exibido após concluir projetos.</div></div>
+</section>
+<section id="regulations" class="section">
+ <div class="pagehead"><div><div class="eyebrow">FIA / TECHNICAL GOVERNANCE</div><h1>Regulamentos técnicos</h1><p class="sub">Acompanhe as regras vigentes, prepare a próxima temporada e mantenha seu carro dentro do regulamento.</p></div><span class="pill">REGULATORY OFFICE</span></div>
+ <div class="notice">As mudanças são anunciadas ao fim de cada temporada e entram em vigor na seguinte. Sua equipe precisa investir na adaptação; as rivais fazem isso de forma autônoma.</div>
+ <div id="regulationSummary" class="grid stats"></div>
+ <div class="card" style="margin-bottom:16px"><div class="cardhead"><h2>REGULAMENTO VIGENTE</h2><span class="eyebrow">ACTIVE RULEBOOK</span></div><div id="activeRegulation"></div><div id="regulationAdaptAction" style="margin-top:14px"></div></div>
+ <div class="card" style="margin-bottom:16px"><div class="cardhead"><h2>PRÓXIMA TEMPORADA</h2><span class="eyebrow">ANNOUNCED CHANGES</span></div><div id="pendingRegulation"></div></div>
+ <div class="card"><div class="cardhead"><h2>HISTÓRICO REGULAMENTAR</h2><span class="eyebrow">RULEBOOK ARCHIVE</span></div><div id="regulationHistory"></div></div>
 </section>
 
 <section id="race" class="section">
@@ -303,6 +315,48 @@ function team(id){return TEAMS.find(t=>t.id===id)}
 function toast(msg){const el=$("toast");el.textContent=msg;el.style.display="block";clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.style.display="none",2600)}
 function escapeHTML(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
 function save(){try{localStorage.setItem(STORE,JSON.stringify(career));return true;}catch(e){toast("Não foi possível salvar neste navegador.");return false;}}
+const REGULATION_RULES=[
+ {id:'aero-floor',label:'Geometria do assoalho',description:'Revisão da flexibilidade e das dimensões do assoalho. Exige reotimização aerodinâmica.',stat:'cornering',penalty:3,area:'Aerodinâmica'},
+ {id:'power-energy',label:'Gestão de energia',description:'Limites revisados para recuperação e entrega de energia da unidade de potência.',stat:'speed',penalty:3,area:'Unidade de potência'},
+ {id:'minimum-weight',label:'Peso mínimo do carro',description:'Aumento da exigência de componentes estruturais e distribuição de massa.',stat:'stability',penalty:2,area:'Chassi'},
+ {id:'tire-construction',label:'Construção dos pneus',description:'Nova especificação de carcaça exige recalibração de suspensão e equilíbrio.',stat:'tires',penalty:3,area:'Suspensão'},
+ {id:'cooling-ducts',label:'Dutos de refrigeração',description:'Restrições nos dutos de refrigeração exigem reorganização do fluxo interno.',stat:'reliability',penalty:3,area:'Refrigeração'}
+];
+function generateRegulation(season){
+ const pool=REGULATION_RULES.slice();for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+ const changes=pool.slice(0,2).map(rule=>({...rule}));
+ return {season,title:`Pacote técnico ${season}`,announced:true,changes};
+}
+function normalizeRegulations(saved,season=2026){
+ const cleanPackage=(pkg,fallbackSeason)=>{if(!pkg||typeof pkg!=='object')return null;const changes=Array.isArray(pkg.changes)?pkg.changes.map(c=>REGULATION_RULES.find(r=>r.id===c?.id)).filter(Boolean).slice(0,2):[];return {season:Math.max(2026,Math.floor(Number(pkg.season)||fallbackSeason)),title:String(pkg.title||`Pacote técnico ${fallbackSeason}`).slice(0,80),announced:pkg.announced!==false,changes};};
+ const active=cleanPackage(saved?.active,season)||{season,title:'Regulamento-base',announced:true,changes:[]};
+ const pending=cleanPackage(saved?.pending,season+1);
+ const history=Array.isArray(saved?.history)?saved.history.slice(-20).map(x=>cleanPackage(x,season)).filter(Boolean):[];
+ return {active,pending,history,adaptedSeason:Number.isInteger(saved?.adaptedSeason)?saved.adaptedSeason:null};
+}
+function regulationAdaptationCost(){return +(TEAM_BUDGET[career.teamId]*.028).toFixed(2);}
+function isRegulationAdapted(teamId){if(!career?.regulations)return true;if(teamId===career.teamId)return career.regulations.adaptedSeason===career.season;return career.rivalAI?.[teamId]?.regulationAdaptedSeason===career.season;}
+function adaptToRegulations(){
+ if(!career)return false;const rules=career.regulations?.active;if(!rules?.changes?.length){career.regulations.adaptedSeason=career.season;save();renderAll();toast('Sua equipe já está alinhada ao regulamento vigente.');return true;}
+ if(isRegulationAdapted(career.teamId)){toast('Sua equipe já está adaptada ao regulamento atual.');return false;}
+ const cost=regulationAdaptationCost();if(career.cash<cost){toast(`Caixa insuficiente. A adaptação custa ${money(cost)}.`);return false;}
+ career.cash=+(career.cash-cost).toFixed(2);career.regulations.adaptedSeason=career.season;career.transactions.unshift({label:`Adaptação regulamentar · temporada ${career.season}`,amount:-cost,type:'expense',month:career.month});career.transactions=career.transactions.slice(0,100);save();renderAll();toast('Carro adaptado ao novo regulamento.');return true;
+}
+function adaptRivalsToRegulations(){
+ if(!career?.regulations)return;for(const t of TEAMS){if(t.id===career.teamId)continue;const ai=career.rivalAI[t.id];const cost=+(TEAM_BUDGET[t.id]*.026).toFixed(2);if(ai.cash>=cost){ai.cash=+(ai.cash-cost).toFixed(2);ai.regulationAdaptedSeason=career.season;rivalLog(t.id,`Adaptou o carro ao regulamento ${career.season}.`);}else{ai.regulationAdaptedSeason=null;rivalLog(t.id,'Não conseguiu financiar a adaptação regulamentar completa.');}}
+}
+function renderRegulations(){
+ const summary=$('regulationSummary'),active=$('activeRegulation'),pending=$('pendingRegulation'),action=$('regulationAdaptAction'),history=$('regulationHistory');if(!career){summary.innerHTML=active.innerHTML=pending.innerHTML=history.innerHTML='<div class="empty">Inicie uma carreira para acompanhar os regulamentos.</div>';action.innerHTML='';return;}
+ career.regulations=normalizeRegulations(career.regulations,career.season);
+ const current=career.regulations.active,upcoming=career.regulations.pending,adapted=isRegulationAdapted(career.teamId),cost=regulationAdaptationCost();
+ summary.innerHTML=`<div class="card"><div class="statlabel">TEMPORADA ATUAL</div><div class="statvalue">${career.season}</div></div><div class="card"><div class="statlabel">REGRAS VIGENTES</div><div class="statvalue">${current.changes.length}</div></div><div class="card"><div class="statlabel">STATUS DA EQUIPE</div><div class="statvalue" style="font-size:18px">${adapted?'Adaptada':'Pendente'}</div></div><div class="card"><div class="statlabel">CUSTO DE ADAPTAÇÃO</div><div class="statvalue" style="font-size:20px">${money(cost)}</div></div>`;
+ active.innerHTML=`<h3>${escapeHTML(current.title)} · ${current.season}</h3>${current.changes.length?`<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:12px">${current.changes.map(c=>`<article class="card"><strong>${escapeHTML(c.label)}</strong><p class="muted">${escapeHTML(c.description)}</p><span class="pill">Área: ${escapeHTML(c.area)}</span></article>`).join('')}</div>`:'<p class="muted">Regulamento inicial da categoria. Nenhuma alteração técnica especial está ativa.</p>'}`;
+ action.innerHTML=current.changes.length?(adapted?'<span class="positive">✓ Sua equipe está adaptada às regras vigentes.</span>':`<p class="muted">Sem adaptação, seu carro perde desempenho nas áreas afetadas até receber o pacote de atualização.</p><button class="btn primary" id="adaptRegulationBtn">Adaptar carro · ${money(cost)}</button>`):'<span class="positive">✓ Regulamento-base ativo.</span>';
+ pending.innerHTML=upcoming?`<span class="pill">Anunciado para ${upcoming.season}</span><h3>${escapeHTML(upcoming.title)}</h3><p class="muted">Estas mudanças entrarão em vigor quando você iniciar a próxima temporada.</p><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:12px">${upcoming.changes.map(c=>`<article class="card"><strong>${escapeHTML(c.label)}</strong><p class="muted">${escapeHTML(c.description)}</p><span class="pill">Área: ${escapeHTML(c.area)}</span></article>`).join('')}</div>`:'<div class="empty">O próximo pacote será anunciado quando a temporada atual for concluída.</div>';
+ const rows=career.regulations.history.slice().reverse();history.innerHTML=rows.length?`<div class="history-list">${rows.map(r=>`<div class="history-item"><div><strong>${escapeHTML(r.title)}</strong><small>Temporada ${r.season}</small></div><span class="metric-delta">${r.changes.length} alteração(ões)</span></div>`).join('')}</div>`:'<div class="empty">O histórico será preenchido conforme novos regulamentos entrarem em vigor.</div>';
+ $('adaptRegulationBtn')?.addEventListener('click',adaptToRegulations);
+}
+
 function normalizeCareer(data){
  if(!data||typeof data!=="object"||!team(data.teamId))return null;
  const base=makeCareer(data.teamId);
@@ -310,6 +364,7 @@ function normalizeCareer(data){
  const normalized={...base,...data};
  normalized.season=Math.max(2026,Math.floor(number(data.season,2026,2026)));
  normalized.month=Math.floor(number(data.month,1,1));
+ normalized.regulations=normalizeRegulations(data.regulations,normalized.season);
  normalized.cash=number(data.cash,base.cash);
  normalized.operatingCost=number(data.operatingCost,base.operatingCost);
  normalized.sponsorIncome=number(data.sponsorIncome,base.sponsorIncome);
@@ -367,8 +422,8 @@ const RIVAL_PROFILES={
  cadillac:{name:'Em formação',style:'Constrói a equipe no longo prazo',research:.95,spend:.86,risk:.36}
 };
 const RIVAL_DEV_KEYS=['aero','power','chassis','suspension','cooling'];
-function createRivalAI(){const state={};for(const t of TEAMS){const p=RIVAL_PROFILES[t.id]||{name:'Equilibrada',style:'Gestão equilibrada',research:1,spend:1,risk:.4};state[t.id]={cash:TEAM_BUDGET[t.id]*.32,profile:p.name,style:p.style,development:{aero:1,power:1,chassis:1,suspension:1,cooling:1},projectsDone:0,lastAction:'Equipe preparada para a temporada.',history:[]};}return state;}
-function normalizeRivalAI(saved){const base=createRivalAI();if(!saved||typeof saved!=='object')return base;for(const t of TEAMS){const x=saved[t.id];if(!x||typeof x!=='object')continue;const p=RIVAL_PROFILES[t.id];base[t.id]={cash:Math.max(0,Math.min(500,Number.isFinite(Number(x.cash))?Number(x.cash):base[t.id].cash)),profile:p.name,style:p.style,development:{},projectsDone:Math.max(0,Math.floor(Number(x.projectsDone)||0)),lastAction:String(x.lastAction||'Gestão em andamento').slice(0,140),history:Array.isArray(x.history)?x.history.slice(-30).map(v=>({month:Math.max(1,Math.floor(Number(v.month)||1)),season:Math.max(2026,Math.floor(Number(v.season)||2026)),text:String(v.text||'Decisão administrativa').slice(0,150)})):[]};for(const k of RIVAL_DEV_KEYS)base[t.id].development[k]=Math.max(1,Math.min(5,Math.floor(Number(x.development?.[k])||1)));}return base;}
+function createRivalAI(){const state={};for(const t of TEAMS){const p=RIVAL_PROFILES[t.id]||{name:'Equilibrada',style:'Gestão equilibrada',research:1,spend:1,risk:.4};state[t.id]={cash:TEAM_BUDGET[t.id]*.32,profile:p.name,style:p.style,development:{aero:1,power:1,chassis:1,suspension:1,cooling:1},projectsDone:0,lastAction:'Equipe preparada para a temporada.',regulationAdaptedSeason:2026,history:[]};}return state;}
+function normalizeRivalAI(saved){const base=createRivalAI();if(!saved||typeof saved!=='object')return base;for(const t of TEAMS){const x=saved[t.id];if(!x||typeof x!=='object')continue;const p=RIVAL_PROFILES[t.id];base[t.id]={cash:Math.max(0,Math.min(500,Number.isFinite(Number(x.cash))?Number(x.cash):base[t.id].cash)),profile:p.name,style:p.style,development:{},projectsDone:Math.max(0,Math.floor(Number(x.projectsDone)||0)),lastAction:String(x.lastAction||'Gestão em andamento').slice(0,140),regulationAdaptedSeason:Number.isInteger(x.regulationAdaptedSeason)?x.regulationAdaptedSeason:null,history:Array.isArray(x.history)?x.history.slice(-30).map(v=>({month:Math.max(1,Math.floor(Number(v.month)||1)),season:Math.max(2026,Math.floor(Number(v.season)||2026)),text:String(v.text||'Decisão administrativa').slice(0,150)})):[]};for(const k of RIVAL_DEV_KEYS)base[t.id].development[k]=Math.max(1,Math.min(5,Math.floor(Number(x.development?.[k])||1)));}return base;}
 function rivalLog(id,text){const a=career.rivalAI[id];a.lastAction=text;a.history.unshift({season:career.season,month:career.month,text});a.history=a.history.slice(0,30);}
 function rivalTeamScore(id){const roster=career.market.rosters[id]||[];const driverScore=roster.reduce((n,d)=>n+d.rating,0)/Math.max(1,roster.length);const ai=career.rivalAI[id];const tech=Object.values(ai.development).reduce((n,v)=>n+v,0);return Math.round(driverScore*.72+tech*1.4);}
 function processRivalAI(closingMonth){
@@ -377,6 +432,8 @@ function processRivalAI(closingMonth){
  for(const t of TEAMS){if(t.id===career.teamId)continue;const ai=career.rivalAI[t.id],roster=career.market.rosters[t.id],profile=RIVAL_PROFILES[t.id];
   const annualBudget=TEAM_BUDGET[t.id],salary=roster.reduce((n,d)=>n+d.salary,0)/12,operating=annualBudget*.0042,revenue=annualBudget*.0062;
   ai.cash=Math.max(0,Math.min(500,ai.cash+revenue-salary-operating));
+  const regulationCost=+(annualBudget*.026).toFixed(2);
+  if(career.regulations?.active?.changes?.length&&ai.regulationAdaptedSeason!==career.season&&ai.cash>=regulationCost){ai.cash-=regulationCost;ai.regulationAdaptedSeason=career.season;rivalLog(t.id,`Concluiu a adaptação ao regulamento ${career.season}.`);}
   // P&D autônomo: equipes priorizam áreas diferentes e só investem se puderem pagar.
   const researchChance=.34*profile.research;
   if(Math.random()<researchChance){const key=RIVAL_DEV_KEYS.slice().sort((a,b)=>ai.development[a]-ai.development[b])[0];const level=ai.development[key];if(level<5){const cost=+(annualBudget*.018*Math.pow(level,1.35)*profile.spend).toFixed(2);if(ai.cash>=cost){ai.cash-=cost;ai.development[key]++;ai.projectsDone++;rivalLog(t.id,`Evoluiu ${key==='aero'?'aerodinâmica':key==='power'?'unidade de potência':key==='chassis'?'chassi':key==='suspension'?'suspensão':'refrigeração'} para nível ${ai.development[key]}.`);}}}
@@ -439,12 +496,12 @@ function load(){
  try{career=normalizeCareer(JSON.parse(localStorage.getItem(STORE)||"null"));}catch(e){career=null;}
  if(!career){try{const old=JSON.parse(localStorage.getItem(OLD_STORE)||localStorage.getItem(LEGACY_STORE)||"null");career=normalizeCareer(old);if(career)save();}catch(e){career=null;}}
 }
-function makeCareer(id){const t=team(id);const contracts=t.drivers.map(d=>{const data=DRIVER_GAME_DATA[d[1]]||[80,2];return {number:d[0],name:d[1],nationality:d[2],rating:data[0],salary:data[1],years:2};});return {teamId:id,market:createInitialMarket(),rivalAI:createRivalAI(),season:2026,seasonHistory:[],calendar:{currentRound:0,completedRounds:[],seasonComplete:false},weekend:null,createdAt:new Date().toISOString(),status:"Carreira iniciada",month:1,cash:TEAM_BUDGET[id],operatingCost:TEAM_BUDGET[id]*.055, sponsorIncome:TEAM_BUDGET[id]*.09,contracts,transactions:[{label:"Investimento inicial da equipe",amount:TEAM_BUDGET[id],type:"income",month:1}],development:{aero:1,power:1,chassis:1,suspension:1,cooling:1},developmentHistory:[],projectsDone:0,activeProject:null,activeProjects:[],teamPoints:0,raceHistory:[]};}
+function makeCareer(id){const t=team(id);const contracts=t.drivers.map(d=>{const data=DRIVER_GAME_DATA[d[1]]||[80,2];return {number:d[0],name:d[1],nationality:d[2],rating:data[0],salary:data[1],years:2};});return {teamId:id,market:createInitialMarket(),rivalAI:createRivalAI(),regulations:normalizeRegulations(null,2026),season:2026,seasonHistory:[],calendar:{currentRound:0,completedRounds:[],seasonComplete:false},weekend:null,createdAt:new Date().toISOString(),status:"Carreira iniciada",month:1,cash:TEAM_BUDGET[id],operatingCost:TEAM_BUDGET[id]*.055, sponsorIncome:TEAM_BUDGET[id]*.09,contracts,transactions:[{label:"Investimento inicial da equipe",amount:TEAM_BUDGET[id],type:"income",month:1}],development:{aero:1,power:1,chassis:1,suspension:1,cooling:1},developmentHistory:[],projectsDone:0,activeProject:null,activeProjects:[],teamPoints:0,raceHistory:[]};}
 function renderTeams(){$("teamGrid").innerHTML=TEAMS.map(t=>`<article class="teamcard ${selectedId===t.id?'selected':''}" data-team="${t.id}" style="--team:${t.color}" tabindex="0" role="button" aria-pressed="${selectedId===t.id}" aria-label="Selecionar ${t.name}"><div class="teamstripe"></div><div class="teambody"><div class="teamtop"><div class="teamlogo">${t.abbr}</div><span class="muted" style="font-size:10px">2026</span></div><div class="teamname">${t.name}</div><div class="engine">UNIDADE DE POTÊNCIA · ${t.engine}</div><div class="drivers">${t.drivers.map(d=>`<div class="driverline"><span>${d[1]}</span><span>#${d[0]}</span></div>`).join("")}</div></div></article>`).join("");document.querySelectorAll("[data-team]").forEach(el=>{el.addEventListener("click",()=>selectTeam(el.dataset.team));el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectTeam(el.dataset.team)}})});$("takeTeamBtn").disabled=!selectedId;}
 function selectTeam(id){selectedId=id;renderTeams();toast(team(id).name+" selecionada.");}
 function startCareer(){if(!selectedId)return;if(career&&!confirm("Iniciar outra carreira? O progresso atual será substituído."))return;stopRaceTimer();race=null;career=makeCareer(selectedId);save();renderAll();showPage("overview");toast("Você assumiu a "+team(selectedId).name+"!");}
 function showPage(page){document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===page));$('market').addEventListener('click',event=>{const free=event.target.closest('[data-sign-free]');const rival=event.target.closest('[data-sign-rival]');if(free){signFreeAgent(free.dataset.signFree);return;}if(rival){proposeRivalSwap(rival.dataset.signRival);}});
-document.querySelectorAll(".nav [data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===page));if(page==="teams")renderTeams();if(page==="market")renderMarket();if(page==="finance"||page==="contracts"||page==="development"||page==="race")renderAll();if(page==="calendar")renderCalendar();if(page==="race"){ensureWeekend();renderWeekend();if(career?.weekend?.sessionIndex===6&&!race)createRace();drawRaceTrack();}}
+document.querySelectorAll(".nav [data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===page));if(page==="teams")renderTeams();if(page==="market")renderMarket();if(page==="finance"||page==="contracts"||page==="development"||page==="race")renderAll();if(page==="calendar")renderCalendar();if(page==="regulations")renderRegulations();if(page==="race"){ensureWeekend();renderWeekend();if(career?.weekend?.sessionIndex===6&&!race)createRace();drawRaceTrack();}}
 function payroll(){return career?career.contracts.reduce((sum,c)=>sum+c.salary/12,0):0;}
 function renderContracts(t){const el=$("contractsContent");if(!t){el.innerHTML='<div class="empty">Assuma uma equipe para gerenciar os contratos.</div>';return;}el.innerHTML=career.contracts.map(c=>`<div class="card drivercard" style="--team:${t.color}"><div class="number">#${c.number}</div><div class="details"><h3>${escapeHTML(c.name)}</h3><p class="muted" style="margin:0;font-size:11px">${escapeHTML(c.nationality)} · Nota ${c.rating}/100</p><div class="contract-meta">Salário: <strong>${money(c.salary)}/ano</strong> · Duração restante: <strong>${c.years} ano(s)</strong></div></div><div class="driver-actions"><button class="btn" data-renew="${c.number}">Renovar +1 ano</button></div></div>`).join('');el.querySelectorAll('[data-renew]').forEach(b=>b.addEventListener('click',()=>renewContract(b.dataset.renew)));}
 function renewContract(number){const c=career?.contracts.find(x=>x.number===number);if(!c)return;if(c.years>=5){toast("Contrato já está no limite de 5 anos.");return;}if(!confirm(`Renovar ${c.name} por mais um ano? O salário anual aumenta 10%.`))return;const old=c.salary;c.years++;c.salary=+(c.salary*1.10).toFixed(2);career.transactions.unshift({label:`Contrato renovado: ${c.name} (salário +10%)`,amount:0,type:'info',month:career.month});const md=career.market?.rosters?.[career.teamId]?.find(d=>d.name===c.name);if(md){md.salary=c.salary;md.years=c.years;}save();renderAll();toast("Contrato renovado.");}
@@ -470,6 +527,10 @@ function carMetrics(levels=career?.development||{},teamId=career?.teamId){
   reliability:clampStat((base.speed+base.cornering+base.stability+base.efficiency+base.tires)/5+(lv.cooling-1)*5+(lv.chassis-1)*.7),
   tires:clampStat(base.tires+(lv.suspension-1)*4.0+(lv.chassis-1)*1.0)
  };
+ if(career?.regulations?.active?.changes?.length){
+  const adapted=isRegulationAdapted(teamId);
+  for(const rule of career.regulations.active.changes){const key=rule.stat;if(Object.prototype.hasOwnProperty.call(stats,key)){const adjustment=adapted?1:-rule.penalty;stats[key]=clampStat(stats[key]+adjustment);}}
+ }
  stats.overall=Math.round((stats.speed+stats.cornering+stats.stability+stats.efficiency+stats.tires+stats.reliability)/6);
  return stats;
 }
@@ -730,17 +791,19 @@ function championshipTables(history=career?.raceHistory||[]){
 function archiveCurrentSeason(){
  if(!career||!career.calendar?.seasonComplete)return false;
  career.seasonHistory ||= [];
- if(career.seasonHistory.some(x=>x.season===career.season))return true;
+ if(career.seasonHistory.some(x=>x.season===career.season)){if(!career.regulations?.pending)career.regulations.pending=generateRegulation(career.season+1);return true;}
  const tables=championshipTables();
  const drivers=tables.drivers.map(d=>({name:d.name,team:d.team,points:d.points,wins:d.wins,podiums:d.podiums,poles:d.poles,starts:d.starts,best:d.starts?d.best:99,average:+d.average.toFixed(2)}));
  const constructors=tables.constructors.map(t=>({team:t.team,points:t.points,wins:t.wins,podiums:t.podiums}));
  career.seasonHistory.push({season:career.season,champion:drivers[0]?.points>0?drivers[0].name:'Sem campeão',constructorChampion:constructors[0]?.points>0?constructors[0].team:'Sem campeão',races:career.calendar.completedRounds.length,drivers,constructors});
- career.seasonHistory=career.seasonHistory.slice(-30);save();return true;
+ career.seasonHistory=career.seasonHistory.slice(-30);career.regulations ||= normalizeRegulations(null,career.season);if(!career.regulations.pending)career.regulations.pending=generateRegulation(career.season+1);save();return true;
 }
 function startNextSeason(){
  if(!career||!career.calendar?.seasonComplete)return;
  archiveCurrentSeason();
- career.season=(career.season||2026)+1;
+ career.regulations ||= normalizeRegulations(null,career.season);
+ if(career.regulations.pending){career.regulations.active=career.regulations.pending;career.regulations.pending=null;career.regulations.history.push(career.regulations.active);career.regulations.history=career.regulations.history.slice(-20);}
+ career.season=(career.season||2026)+1;career.regulations.active.season=career.season;career.regulations.adaptedSeason=null;adaptRivalsToRegulations();
  career.calendar={currentRound:0,completedRounds:[],seasonComplete:false};
  career.weekend=null;career.raceHistory=[];career.teamPoints=0;race=null;stopRaceTimer();
  save();renderAll();renderCalendar();renderWeekend();showPage('calendar');toast(`Temporada ${career.season} iniciada. Histórico anterior preservado.`);
@@ -764,7 +827,7 @@ function renderCalendar(){
  if(career.calendar.seasonComplete)archiveCurrentSeason();renderSeasonHistory();
 }
 function renderFinance(t){if(!t){$("cashValue").textContent=$("payrollValue").textContent=$("operatingValue").textContent="—";$("financeSummary").textContent="Assuma uma equipe para visualizar o financeiro.";$("transactions").textContent="Nenhuma movimentação.";return;}const p=payroll(),net=career.sponsorIncome-p-career.operatingCost;$("cashValue").textContent=money(career.cash);$("payrollValue").textContent=money(p);$("operatingValue").textContent=money(career.operatingCost);$("monthLabel").textContent=`Mês ${career.month}`;$("financeSummary").innerHTML=`<p>Receita de patrocinadores: <strong class="positive">+${money(career.sponsorIncome)}</strong></p><p>Folha salarial: <strong class="negative">−${money(p)}</strong></p><p>Custos operacionais: <strong class="negative">−${money(career.operatingCost)}</strong></p><hr style="border-color:var(--line)"><p>Resultado previsto do mês: <strong class="${net>=0?'positive':'negative'}">${net>=0?'+':'−'}${money(Math.abs(net))}</strong></p>`;$("transactions").innerHTML=career.transactions.length?`<div class="tablewrap"><table><thead><tr><th>MÊS</th><th>MOVIMENTAÇÃO</th><th>VALOR</th></tr></thead><tbody>${career.transactions.map(x=>`<tr><td>${x.month}</td><td>${escapeHTML(x.label)}</td><td class="${x.type==='income'?'positive':x.type==='expense'?'negative':''}">${x.type==='info'?'Info':(x.amount>0?'+':'')+money(x.amount)}</td></tr>`).join('')}</tbody></table></div>`:'Nenhuma movimentação.';}
-function renderAll(){const t=career?team(career.teamId):null;$("sideTeam").textContent=t?t.name:"Nenhuma equipe";$("sideStatus").textContent=career?`Temporada ${career.season||2026} · Mês ${career.month}`:"Carreira não iniciada";$("statTeam").textContent=t?t.name:"—";$("statDrivers").textContent=t?"02":"—";$("statStatus").textContent=career?"Em andamento":"Não iniciada";$("nextStep").className=t?"":"empty";$("nextStep").innerHTML=t?`<strong>${t.name} está sob seu comando.</strong><p class="muted">Caixa disponível: ${money(career.cash)}. Gerencie os contratos, desenvolva o carro e prepare sua equipe para as corridas. Pontos: ${career.teamPoints||0}.</p><button class="btn" data-goto="finance">Abrir financeiro →</button>`:"Selecione uma equipe para assumir o comando e iniciar sua carreira.";$("nextStep").querySelector("[data-goto]")?.addEventListener("click",()=>showPage("finance"));$("garageContent").style.setProperty("--team",t?t.color:"#55c7df");if(!t){$("garageContent").className="empty";$("garageContent").textContent="Você ainda não assumiu uma equipe.";}else{$("garageContent").className="";$("garageContent").innerHTML=`<div class="selectedhero" style="--team:${t.color}"><div class="heroaccent"></div><div class="heroinside"><div><div class="eyebrow">ESCUDERIA / TEMPORADA ${career.season||2026}</div><h2>${t.full}</h2><p>Unidade de potência: ${t.engine}</p></div><div class="heroabbr">${t.abbr}</div></div></div><div class="grid drivercards">${career.contracts.map(d=>`<div class="card drivercard" style="--team:${t.color}"><div class="number">#${d.number}</div><div><h3>${escapeHTML(d.name)}</h3><p>${escapeHTML(d.nationality)} · Nota ${d.rating}/100</p><div class="contract-meta">Contrato: ${d.years} ano(s) · ${money(d.salary)}/ano</div></div></div>`).join("")}</div><div class="card" style="margin-top:16px"><div class="telemetry-head"><div><div class="eyebrow">CAR PERFORMANCE</div><h2>Desempenho técnico do monoposto</h2></div><span class="pill">${carScore()}/100 geral</span></div><div class="telemetry-grid">${metricCardsHTML(carMetrics(),carMetrics({aero:1,power:1,chassis:1,suspension:1,cooling:1}))}</div><div style="margin-top:18px"><div class="cardhead"><h2>ÚLTIMAS EVOLUÇÕES</h2><button class="btn" data-goto="development">Abrir engenharia →</button></div>${career.developmentHistory?.length?`<div class="history-list">${career.developmentHistory.slice().reverse().slice(0,4).map(h=>`<div class="history-item"><div><strong>${escapeHTML(h.name)} · Nível ${h.level}</strong><small>Mês ${h.month}</small></div><span class="metric-delta">${h.before?.overall??'—'} → ${h.after?.overall??'—'}</span></div>`).join('')}</div>`:'<div class="empty">Nenhuma melhoria concluída ainda.</div>'}</div></div>`;}renderContracts(t);renderFinance(t);renderDevelopment(t);renderCalendar();renderMarket();renderRivals();$("advanceMonthBtn").disabled=!t;}
+function renderAll(){const t=career?team(career.teamId):null;$("sideTeam").textContent=t?t.name:"Nenhuma equipe";$("sideStatus").textContent=career?`Temporada ${career.season||2026} · Mês ${career.month}`:"Carreira não iniciada";$("statTeam").textContent=t?t.name:"—";$("statDrivers").textContent=t?"02":"—";$("statStatus").textContent=career?"Em andamento":"Não iniciada";$("nextStep").className=t?"":"empty";$("nextStep").innerHTML=t?`<strong>${t.name} está sob seu comando.</strong><p class="muted">Caixa disponível: ${money(career.cash)}. Gerencie os contratos, desenvolva o carro e prepare sua equipe para as corridas. Pontos: ${career.teamPoints||0}.</p><button class="btn" data-goto="finance">Abrir financeiro →</button>`:"Selecione uma equipe para assumir o comando e iniciar sua carreira.";$("nextStep").querySelector("[data-goto]")?.addEventListener("click",()=>showPage("finance"));$("garageContent").style.setProperty("--team",t?t.color:"#55c7df");if(!t){$("garageContent").className="empty";$("garageContent").textContent="Você ainda não assumiu uma equipe.";}else{$("garageContent").className="";$("garageContent").innerHTML=`<div class="selectedhero" style="--team:${t.color}"><div class="heroaccent"></div><div class="heroinside"><div><div class="eyebrow">ESCUDERIA / TEMPORADA ${career.season||2026}</div><h2>${t.full}</h2><p>Unidade de potência: ${t.engine}</p></div><div class="heroabbr">${t.abbr}</div></div></div><div class="grid drivercards">${career.contracts.map(d=>`<div class="card drivercard" style="--team:${t.color}"><div class="number">#${d.number}</div><div><h3>${escapeHTML(d.name)}</h3><p>${escapeHTML(d.nationality)} · Nota ${d.rating}/100</p><div class="contract-meta">Contrato: ${d.years} ano(s) · ${money(d.salary)}/ano</div></div></div>`).join("")}</div><div class="card" style="margin-top:16px"><div class="telemetry-head"><div><div class="eyebrow">CAR PERFORMANCE</div><h2>Desempenho técnico do monoposto</h2></div><span class="pill">${carScore()}/100 geral</span></div><div class="telemetry-grid">${metricCardsHTML(carMetrics(),carMetrics({aero:1,power:1,chassis:1,suspension:1,cooling:1}))}</div><div style="margin-top:18px"><div class="cardhead"><h2>ÚLTIMAS EVOLUÇÕES</h2><button class="btn" data-goto="development">Abrir engenharia →</button></div>${career.developmentHistory?.length?`<div class="history-list">${career.developmentHistory.slice().reverse().slice(0,4).map(h=>`<div class="history-item"><div><strong>${escapeHTML(h.name)} · Nível ${h.level}</strong><small>Mês ${h.month}</small></div><span class="metric-delta">${h.before?.overall??'—'} → ${h.after?.overall??'—'}</span></div>`).join('')}</div>`:'<div class="empty">Nenhuma melhoria concluída ainda.</div>'}</div></div>`;}renderContracts(t);renderFinance(t);renderDevelopment(t);renderCalendar();renderMarket();renderRivals();renderRegulations();$("advanceMonthBtn").disabled=!t;}
 $('garageContent').addEventListener('click',event=>{const target=event.target.closest('[data-goto]');if(target)showPage(target.dataset.goto);});
 // Delegação persistente: os cartões são recriados em cada render, então o clique
 // é tratado no contêiner estável e não depende de listeners em botões dinâmicos.
@@ -790,7 +853,7 @@ $('calendarRaceBtn').addEventListener('click',()=>{ensureWeekend();showPage('rac
 $('nextSeasonBtn').addEventListener('click',()=>{if(confirm(`Arquivar a temporada ${career?.season||2026} e iniciar a próxima?`))startNextSeason();});
 $('completeSessionBtn').addEventListener('click',completeWeekendSession);
 
-load();if(career&&team(career.teamId)){syncMarketRoster();selectedId=career.teamId;career.contracts ||= makeCareer(career.teamId).contracts;career.rivalAI=normalizeRivalAI(career.rivalAI);career.month ||= 1;career.cash ??= TEAM_BUDGET[career.teamId];career.operatingCost ??= TEAM_BUDGET[career.teamId]*.055;career.sponsorIncome ??= TEAM_BUDGET[career.teamId]*.09;career.transactions ||= [];career.development ||= {aero:1,power:1,chassis:1,suspension:1};career.developmentHistory ||= [];career.projectsDone ||= 0;career.activeProject ||= null;career.activeProjects ||= (career.activeProject?[career.activeProject]:[]);career.development.cooling ||= 1;career.teamPoints ||= 0;career.raceHistory ||= [];career.developmentHistory ||= [];career.calendar ||= {currentRound:0,completedRounds:[],seasonComplete:false};career.seasonHistory ||= [];career.season ||= 2026;}else career=null;if(career&&!career.calendar.seasonComplete){ensureWeekend();}renderAll();renderTeams();renderWeekend();
+load();if(career&&team(career.teamId)){syncMarketRoster();selectedId=career.teamId;career.contracts ||= makeCareer(career.teamId).contracts;career.rivalAI=normalizeRivalAI(career.rivalAI);career.regulations=normalizeRegulations(career.regulations,career.season||2026);career.month ||= 1;career.cash ??= TEAM_BUDGET[career.teamId];career.operatingCost ??= TEAM_BUDGET[career.teamId]*.055;career.sponsorIncome ??= TEAM_BUDGET[career.teamId]*.09;career.transactions ||= [];career.development ||= {aero:1,power:1,chassis:1,suspension:1};career.developmentHistory ||= [];career.projectsDone ||= 0;career.activeProject ||= null;career.activeProjects ||= (career.activeProject?[career.activeProject]:[]);career.development.cooling ||= 1;career.teamPoints ||= 0;career.raceHistory ||= [];career.developmentHistory ||= [];career.calendar ||= {currentRound:0,completedRounds:[],seasonComplete:false};career.seasonHistory ||= [];career.season ||= 2026;}else career=null;if(career&&!career.calendar.seasonComplete){ensureWeekend();}renderAll();renderTeams();renderWeekend();
 </script>
 </body>
 </html>

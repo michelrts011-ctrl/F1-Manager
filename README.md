@@ -1,5 +1,16 @@
 # Log de atualizações
 
+## v2.3.0
+- Adicionada a central de regulamentos técnicos, com consulta às regras vigentes e ao histórico regulamentar.
+- Implementados pacotes de mudanças técnicas anunciados ao fim de cada temporada e aplicados no início da temporada seguinte.
+- Criadas cinco categorias de mudanças: aerodinâmica, unidade de potência, chassi, pneus e refrigeração.
+- Adicionada adaptação regulamentar da equipe do jogador, com custo financeiro e registro no histórico de transações.
+- A falta de adaptação aplica penalidades aos indicadores técnicos afetados; a adaptação remove as penalidades e concede pequeno ganho de conformidade.
+- Implementada adaptação autônoma das equipes rivais, com custo próprio e possibilidade de concluir a adaptação em meses posteriores caso falte orçamento.
+- Integradas as regras ao cálculo de desempenho dos carros nas corridas.
+- Preservada a compatibilidade com carreiras anteriores, mantendo a chave de salvamento local existente.
+- Mantido o salvamento automático das decisões e do histórico regulamentar.
+
 ## v2.2.0
 - Reformulado o centro de desenvolvimento como sistema de engenharia avançada.
 - Adicionada a área técnica de refrigeração, com impacto em eficiência e confiabilidade.
