@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F1 Team Manager Simulator · v2.4.0</title>
+<title>F1 Team Manager Simulator · v2.5.0</title>
 <style>
 :root{--bg:#090d14;--panel:#111925;--panel2:#151f2d;--line:#263346;--muted:#91a0b5;--text:#edf3fb;--accent:#e11d38;--cyan:#55c7df;--green:#48c78e;--shadow:0 18px 50px #0006}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% -20%,#1b2c43 0,transparent 45%),var(--bg);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}
@@ -92,7 +92,7 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
 <body>
 <header class="topbar">
  <div class="brand"><div class="brandmark">F1</div><div>TEAM MANAGER<small>RACE OPERATIONS SIMULATOR</small></div></div>
- <div class="topright"><span id="seasonLabel">SEASON 2026</span><span class="version">BUILD 2.4.0</span></div>
+ <div class="topright"><span id="seasonLabel">SEASON 2026</span><span class="version">BUILD 2.5.0</span></div>
 </header>
 <div class="layout">
 <aside>
@@ -127,7 +127,7 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
   <div class="card"><div class="cardhead"><h2>PRÓXIMO PASSO</h2><span class="eyebrow">GESTÃO</span></div><div id="nextStep" class="empty">Selecione uma equipe para assumir o comando e iniciar sua carreira.</div></div>
   <div class="card"><div class="cardhead"><h2>GRADE 2026</h2><span class="eyebrow">GRID COMPLETO</span></div><p style="font-size:31px;font-weight:850;margin:0">11 <span class="muted" style="font-size:13px">equipes</span></p><p class="muted" style="font-size:12px">11 equipes e 22 pilotos no grid simulado da temporada.</p><button class="btn" data-goto="teams">Ver equipes e pilotos →</button></div>
  </div>
- <div class="footer">F1 TEAM MANAGER SIMULATOR · BUILD 2.4.0 · REGULAMENTOS TÉCNICOS</div>
+ <div class="footer">F1 TEAM MANAGER SIMULATOR · BUILD 2.5.0 · DISPUTAS E ULTRAPASSAGENS</div>
 </section>
 <section id="teams" class="section">
  <div class="pagehead"><div><div class="eyebrow">CONSTRUTORES / 2026</div><h1>Selecione sua equipe</h1><p class="sub">Escolha uma das 11 escuderias para iniciar sua trajetória.</p></div><button class="btn primary" id="takeTeamBtn" disabled>Assumir equipe</button></div>
@@ -198,7 +198,7 @@ main{padding:34px clamp(20px,4vw,64px);max-width:1600px;width:100%;margin:auto}.
 
 <section id="race" class="section">
  <div class="pagehead"><div><div class="eyebrow">RACE CONTROL / LIVE OPERATIONS</div><h1>Central de corrida</h1><p class="sub">Acompanhe os 22 carros e intervenha na estratégia dos seus dois pilotos.</p></div><span class="pill">SIMULAÇÃO 2D · 12 VOLTAS</span></div>
- <div class="notice">Modo híbrido: o desempenho agora considera a engenharia do carro. Potência favorece retas; aerodinâmica e chassi favorecem curvas e estabilidade; suspensão reduz desgaste dos pneus. Você controla ritmo e pit stops.</div>
+ <div class="notice">Modo híbrido: o desempenho agora considera a engenharia do carro. Potência favorece retas; aerodinâmica e chassi favorecem curvas e estabilidade; suspensão reduz desgaste dos pneus. Você controla ritmo e pit stops. Disputas, defesa de posição e DRS influenciam as ultrapassagens.</div>
  <div id="weekendPanel" class="card" style="margin-bottom:16px">
   <div class="cardhead"><div><div class="eyebrow">GRAND PRIX WEEKEND</div><h2 id="weekendTitle">Fim de semana de GP</h2></div><span class="pill" id="weekendStatus">Preparação</span></div>
   <div id="weekendStages" class="weekend-stages"></div>
@@ -593,7 +593,7 @@ function drawRaceTrack(){const canvas=$('raceCanvas');if(!canvas)return;const ct
  path();ctx.lineJoin='round';ctx.strokeStyle='#17212b';ctx.lineWidth=104;ctx.stroke();path();ctx.strokeStyle='#cbd3d8';ctx.lineWidth=78;ctx.stroke();path();ctx.strokeStyle='#3a4650';ctx.lineWidth=68;ctx.stroke();path();ctx.strokeStyle='#aeb7bd';ctx.lineWidth=2;ctx.setLineDash([14,13]);ctx.stroke();ctx.setLineDash([]);
  // Start/finish marker
  const start=trackPoint(0,0);ctx.save();ctx.translate(start.x,start.y);ctx.rotate(start.angle);for(let i=0;i<8;i++){ctx.fillStyle=i%2?'#101820':'#f4f6f8';ctx.fillRect(-3,-40+i*10,7,10);}ctx.restore();
- if(race){const ordered=[...race.cars].sort((a,b)=>a.progress-b.progress);ordered.forEach(car=>{if(car.finished)return;const lane=car.teamId===career?.teamId?(car.driverIndex===0?-9:9):(car.grid%2?12:-12);const pos=trackPoint(car.progress,lane);ctx.save();ctx.translate(pos.x,pos.y);ctx.rotate(pos.angle);ctx.fillStyle='#05080c';ctx.fillRect(-10,-5,20,10);ctx.fillStyle=car.color;ctx.fillRect(-8,-4,15,8);ctx.fillStyle='#eaf2f8';ctx.fillRect(1,-2,4,4);ctx.fillStyle='#111';ctx.fillRect(-8,-6,5,2);ctx.fillRect(-8,4,5,2);ctx.fillRect(5,-6,5,2);ctx.fillRect(5,4,5,2);if(car.teamId===career?.teamId){ctx.strokeStyle='#fff';ctx.lineWidth=1.4;ctx.strokeRect(-10,-6,21,12);}ctx.restore();});}
+ if(race){const ordered=[...race.cars].sort((a,b)=>a.progress-b.progress);ordered.forEach(car=>{if(car.finished)return;const lane=(car.grid%2?12:-12)+(car.raceLaneOffset||0);const pos=trackPoint(car.progress,lane);ctx.save();ctx.translate(pos.x,pos.y);ctx.rotate(pos.angle);ctx.fillStyle='#05080c';ctx.fillRect(-10,-5,20,10);ctx.fillStyle=car.color;ctx.fillRect(-8,-4,15,8);ctx.fillStyle='#eaf2f8';ctx.fillRect(1,-2,4,4);ctx.fillStyle='#111';ctx.fillRect(-8,-6,5,2);ctx.fillRect(-8,4,5,2);ctx.fillRect(5,-6,5,2);ctx.fillRect(5,4,5,2);if(car.teamId===career?.teamId){ctx.strokeStyle='#fff';ctx.lineWidth=1.4;ctx.strokeRect(-10,-6,21,12);}ctx.restore();});}
 }
 function raceMessage(msg){$('raceMessage').textContent=msg;}
 const WEEKEND_SESSIONS=[
@@ -656,14 +656,14 @@ function createRace(){
  stopRaceTimer();const event=currentGrandPrix();if(!event){toast('Temporada concluída!');return;}
  const grid=career.weekend.gridOrder.length===RACE_DRIVERS.length?career.weekend.gridOrder:RACE_DRIVERS.map(d=>d.name);
  const ordered=grid.map(name=>RACE_DRIVERS.find(d=>d.name===name)).filter(Boolean);
- race={round:career.calendar.currentRound,eventId:event.id,cars:ordered.map((d,i)=>({ ...d,grid:i,progress:-i*.002,velocity:1,wear:0.04,fuel:100,tire:'medium',pace:'balanced',pitRequested:false,pitTimer:0,pitStops:0,finished:false,retired:false,damage:0,finishTime:null,driverIndex:d.teamId===career.teamId?RACE_DRIVERS.filter(x=>x.teamId===career.teamId).findIndex(x=>x.name===d.name):-1})),elapsed:0,running:false,finished:false,selected:0,lastMessage:'Luzes apagadas em breve.',lastSnapshotAt:0,weather:'dry',trackWetness:0,flag:'green',flagEndsAt:0,nextEventAt:14000+Math.random()*9000,redFlag:false,redFlagCount:0,eventText:'Condições estáveis. Boa corrida!',eventLog:[]};
- const snapshot=career.weekend?.raceSnapshot;if(snapshot&&snapshot.round===race.round&&snapshot.eventId===race.eventId&&snapshot.cars.length===22){race.elapsed=snapshot.elapsed;Object.assign(race,{weather:snapshot.weather||'dry',trackWetness:snapshot.trackWetness||0,flag:snapshot.flag||'green',flagEndsAt:snapshot.flagEndsAt||0,nextEventAt:snapshot.nextEventAt||race.elapsed+15000,redFlag:!!snapshot.redFlag,redFlagCount:snapshot.redFlagCount||0,eventText:snapshot.eventText||'Corrida retomada.',eventLog:Array.isArray(snapshot.eventLog)?snapshot.eventLog:[]});race.cars.forEach(car=>{const saved=snapshot.cars.find(x=>x.name===car.name);if(saved)Object.assign(car,{progress:saved.progress,velocity:saved.velocity||1,wear:saved.wear,fuel:saved.fuel,tire:saved.tire,pace:saved.pace,pitRequested:saved.pitRequested,pitTimer:saved.pitTimer,pitStops:saved.pitStops,finished:saved.finished,retired:!!saved.retired,damage:saved.damage||0,finishTime:saved.finishTime,requestedTire:saved.requestedTire,nextTire:saved.nextTire});});race.lastSnapshotAt=Math.floor(race.elapsed/5000);}
+ race={round:career.calendar.currentRound,eventId:event.id,cars:ordered.map((d,i)=>({ ...d,grid:i,progress:-i*.002,velocity:1,wear:0.04,fuel:100,tire:'medium',pace:'balanced',pitRequested:false,pitTimer:0,pitStops:0,finished:false,retired:false,damage:0,finishTime:null,driverIndex:d.teamId===career.teamId?RACE_DRIVERS.filter(x=>x.teamId===career.teamId).findIndex(x=>x.name===d.name):-1,overtaking:55+((d.number*7+d.rating*3)%41),defense:55+((d.number*11+d.rating*5)%41),aggression:45+((d.number*13+d.rating*2)%51),drsActive:false,overtakeBoost:0,attackCooldown:0,battleState:'',battleTarget:null,battleStateTimer:0,raceLaneOffset:0,defenseBoost:0,overtakes:0})),elapsed:0,running:false,finished:false,selected:0,lastMessage:'Luzes apagadas em breve.',lastSnapshotAt:0,weather:'dry',trackWetness:0,flag:'green',flagEndsAt:0,nextEventAt:14000+Math.random()*9000,redFlag:false,redFlagCount:0,eventText:'Condições estáveis. Boa corrida!',eventLog:[]};
+ const snapshot=career.weekend?.raceSnapshot;if(snapshot&&snapshot.round===race.round&&snapshot.eventId===race.eventId&&snapshot.cars.length===22){race.elapsed=snapshot.elapsed;Object.assign(race,{weather:snapshot.weather||'dry',trackWetness:snapshot.trackWetness||0,flag:snapshot.flag||'green',flagEndsAt:snapshot.flagEndsAt||0,nextEventAt:snapshot.nextEventAt||race.elapsed+15000,redFlag:!!snapshot.redFlag,redFlagCount:snapshot.redFlagCount||0,eventText:snapshot.eventText||'Corrida retomada.',eventLog:Array.isArray(snapshot.eventLog)?snapshot.eventLog:[]});race.cars.forEach(car=>{const saved=snapshot.cars.find(x=>x.name===car.name);if(saved)Object.assign(car,{progress:saved.progress,velocity:saved.velocity||1,wear:saved.wear,fuel:saved.fuel,tire:saved.tire,pace:saved.pace,pitRequested:saved.pitRequested,pitTimer:saved.pitTimer,pitStops:saved.pitStops,finished:saved.finished,retired:!!saved.retired,damage:saved.damage||0,finishTime:saved.finishTime,requestedTire:saved.requestedTire,nextTire:saved.nextTire,drsActive:!!saved.drsActive,overtakeBoost:saved.overtakeBoost||0,attackCooldown:saved.attackCooldown||0,battleState:saved.battleState||'',battleTarget:saved.battleTarget||null,battleStateTimer:saved.battleStateTimer||0,raceLaneOffset:saved.raceLaneOffset||0,defenseBoost:saved.defenseBoost||0,overtakes:saved.overtakes||0});});race.lastSnapshotAt=Math.floor(race.elapsed/5000);}
  $('raceWorkspace').style.display='grid';$('raceResult').style.display='none';$('raceStartBtn').disabled=false;$('raceStartBtn').textContent=race.redFlag?'▶ Relargar corrida':'▶ Iniciar corrida';$('racePauseBtn').disabled=true;$('raceDriverSelect').innerHTML=RACE_DRIVERS.filter(x=>x.teamId===career.teamId).map(d=>`<option value="${escapeHTML(d.name)}">${escapeHTML(d.name)}</option>`).join('');$('racePaceSelect').value='balanced';$('raceTireSelect').value='medium';raceSpeed=1;$('speed1Btn').classList.add('selected');$('speed2Btn').classList.remove('selected');$('racePitCount').textContent='0';$('raceBestResult').textContent=career.raceHistory?.length?`P${Math.min(...career.raceHistory[0].positions.map(x=>x.position))}`:'—';raceMessage(`Grid formado para ${event.name}. Prepare a estratégia e inicie a corrida.`);$('raceStatus').textContent=`ETAPA ${race.round+1} · GRID FORMADO`;const raceInfo=document.querySelector('#race .race-side .card .race-statrow strong');if(raceInfo)raceInfo.textContent=event.circuit;renderRace();drawRaceTrack();
 }
 function stopRaceTimer(){if(raceTimer){clearInterval(raceTimer);raceTimer=null;}}
 function saveRaceSnapshot(){
  if(!career||!race||race.finished||!career.weekend||career.weekend.round!==race.round)return;
- career.weekend.raceSnapshot={round:race.round,eventId:race.eventId,elapsed:race.elapsed,weather:race.weather,trackWetness:race.trackWetness,flag:race.flag,flagEndsAt:race.flagEndsAt,nextEventAt:race.nextEventAt,redFlag:race.redFlag,redFlagCount:race.redFlagCount,eventText:race.eventText,eventLog:race.eventLog||[],cars:race.cars.map(c=>({name:c.name,progress:c.progress,velocity:c.velocity||1,wear:c.wear,fuel:c.fuel,tire:c.tire,pace:c.pace,pitRequested:c.pitRequested,pitTimer:c.pitTimer,pitStops:c.pitStops,finished:c.finished,retired:c.retired,damage:c.damage,finishTime:c.finishTime,requestedTire:c.requestedTire||null,nextTire:c.nextTire||null}))};
+ career.weekend.raceSnapshot={round:race.round,eventId:race.eventId,elapsed:race.elapsed,weather:race.weather,trackWetness:race.trackWetness,flag:race.flag,flagEndsAt:race.flagEndsAt,nextEventAt:race.nextEventAt,redFlag:race.redFlag,redFlagCount:race.redFlagCount,eventText:race.eventText,eventLog:race.eventLog||[],cars:race.cars.map(c=>({name:c.name,progress:c.progress,velocity:c.velocity||1,wear:c.wear,fuel:c.fuel,tire:c.tire,pace:c.pace,pitRequested:c.pitRequested,pitTimer:c.pitTimer,pitStops:c.pitStops,finished:c.finished,retired:c.retired,damage:c.damage,finishTime:c.finishTime,requestedTire:c.requestedTire||null,nextTire:c.nextTire||null,drsActive:!!c.drsActive,overtakeBoost:c.overtakeBoost||0,attackCooldown:c.attackCooldown||0,battleState:c.battleState||'',battleTarget:c.battleTarget||null,battleStateTimer:c.battleStateTimer||0,raceLaneOffset:c.raceLaneOffset||0,defenseBoost:c.defenseBoost||0,overtakes:c.overtakes||0}))};
  save();
 }
 function startRace(){if(!race)createRace();if(!race||race.finished)return;if(!race.running){if(race.redFlag){race.redFlag=false;race.flag='green';race.eventText='Relargada após bandeira vermelha.';race.nextEventAt=race.elapsed+18000;raceMessage('Relargada! A corrida foi retomada após a bandeira vermelha.');}else if(race.elapsed===0)raceMessage('Largada! Acompanhe o ritmo e monitore os pneus.');race.running=true;raceLastTick=performance.now();raceTimer=setInterval(tickRace,100);$('raceStartBtn').disabled=true;$('raceStartBtn').textContent='▶ Iniciar corrida';$('racePauseBtn').disabled=false;$('raceStatus').textContent='CORRIDA EM ANDAMENTO';renderRace();}}
@@ -712,11 +712,65 @@ function trackPhysicsAt(progress){
  const corner=Math.max(0,Math.min(1,turn/1.65));
  return {corner,straight:corner<.16,braking:corner>.34};
 }
+// Etapa 2: disputas, defesa de posição e DRS.
+function updateRaceBattles(dt){
+ if(!race)return;
+ const active=race.cars.filter(c=>!c.finished&&!c.retired&&c.pitTimer<=0).sort((a,b)=>b.progress-a.progress);
+ for(const car of race.cars){
+  car.drsActive=false;
+  car.overtakeBoost=Math.max(0,(car.overtakeBoost||0)-dt);
+  car.attackCooldown=Math.max(0,(car.attackCooldown||0)-dt);
+  car.defenseBoost=Math.max(0,(car.defenseBoost||0)-dt);
+  car.battleStateTimer=Math.max(0,(car.battleStateTimer||0)-dt);
+  if(car.battleState==='attacking'&&car.overtakeBoost<=0)car.battleState='';
+  if((car.battleState==='defending'||car.battleState==='pressuring')&&car.battleStateTimer<=0){car.battleState='';car.battleTarget=null;}
+  car.raceLaneOffset=(car.raceLaneOffset||0)*.88;
+ }
+ for(let i=1;i<active.length;i++){
+  const attacker=active[i],defender=active[i-1],gap=defender.progress-attacker.progress;
+  if(gap<=0||gap>.022)continue;
+  const straight=trackPhysicsAt(attacker.progress).straight;
+  const drsEligible=straight&&gap<=.014&&gap>.00045&&race.flag==='green'&&race.trackWetness<.35;
+  if(drsEligible)attacker.drsActive=true;
+  if(gap>.0065||attacker.attackCooldown>0||attacker.overtakeBoost>0) {
+   if(gap<.006&&defender.defenseBoost<=0&&attacker.overtakeBoost<=0){defender.battleState='defending';defender.battleTarget=attacker.name;defender.battleStateTimer=450;defender.defenseBoost=450;}
+   continue;
+  }
+  const skill=(attacker.overtaking-defender.defense)*.009;
+  const paceEdge=((attacker.velocity||1)-(defender.velocity||1))*5.5;
+  const chance=Math.max(.12,Math.min(.78,.30+skill+paceEdge+(attacker.drsActive?.16:0)+(attacker.aggression-70)*.002));
+  attacker.attackCooldown=5200+((attacker.number*137)%1800);
+  defender.battleState='defending';defender.battleTarget=attacker.name;defender.battleStateTimer=1800;defender.defenseBoost=1800;
+  if(Math.random()<chance){
+   attacker.overtakeBoost=5000;attacker.battleState='attacking';attacker.battleTarget=defender.name;
+   attacker.raceLaneOffset=(attacker.grid%2?-1:1)*17;
+   defender.raceLaneOffset=(attacker.grid%2?1:-1)*7;
+   raceMessage(`${attacker.name} ataca ${defender.name}${attacker.drsActive?' com DRS':''}!`);
+  }else{
+   attacker.battleState='pressuring';attacker.battleTarget=defender.name;attacker.battleStateTimer=2200;
+   attacker.raceLaneOffset=(attacker.grid%2?-1:1)*11;
+  }
+ }
+}
+function resolveRacePasses(){
+ if(!race)return;
+ for(const car of race.cars){
+  if(car.battleState!=='attacking'||!car.battleTarget)continue;
+  const target=race.cars.find(x=>x.name===car.battleTarget);
+  if(target&&car.progress>target.progress+.00015){
+   raceMessage(`${car.name} ultrapassa ${target.name}!`);
+   car.overtakes=(car.overtakes||0)+1;
+   car.battleState='';car.battleTarget=null;car.battleStateTimer=0;car.overtakeBoost=0;car.raceLaneOffset=0;
+   target.battleState='';target.battleTarget=null;target.battleStateTimer=0;target.defenseBoost=0;target.raceLaneOffset=0;
+  }
+ }
+}
 function tickRace(){
  if(!race||!race.running)return;
  const now=performance.now(),dt=Math.min(250,now-raceLastTick)*raceSpeed;raceLastTick=now;race.elapsed+=dt;updateRaceControl(dt);
  if(race.redFlag){renderRace();saveRaceSnapshot();return;}
  const flagFactor=race.flag==='safety'?.48:race.flag==='vsc'?.68:race.flag==='yellow'?.78:1;
+ updateRaceBattles(dt);
  race.cars.forEach(car=>{
   if(car.finished)return;
   if(car.pitTimer>0){car.pitTimer-=dt;if(car.pitTimer<=0){car.pitTimer=0;car.wear=.035;car.fuel=Math.min(100,car.fuel+28);car.tire=car.nextTire||'medium';car.nextTire=null;raceMessage(`${car.name} voltou à pista com pneus ${tireName(car.tire).toLowerCase()}.`);}return;}
@@ -727,7 +781,7 @@ function tickRace(){
   const wearPenalty=1-Math.max(0,car.wear-.25)*.19;const technical=raceCarTechnicalFactor(car);const driverFactor=.965+(car.rating/100)*.065;const damagePenalty=1-(car.damage||0)*.0011;const carFactor=driverFactor*technical.factor*damagePenalty;const variation=1+Math.sin(race.elapsed/3700+car.grid*1.7)*.004;const fuelPenalty=.98+car.fuel*.0002;
   const track=trackPhysicsAt(car.progress);const stats=car.teamId===career?.teamId?carMetrics():carMetrics(career?.rivalAI?.[car.teamId]?.development||{aero:1,power:1,chassis:1,suspension:1,cooling:1},car.teamId);
   const grip= Math.max(.82,Math.min(1.08,1+(stats.cornering-82)*.0015+(stats.stability-82)*.0008-(car.wear*.12)));
-  const cornerLimit=1-track.corner*(.105/grip);const targetSpeed=paceFactor*tireFactor*wearPenalty*carFactor*variation*fuelPenalty*flagFactor*cornerLimit;
+  const cornerLimit=1-track.corner*(.105/grip);const drsFactor=car.drsActive&&track.straight?1.028:1;const attackFactor=car.overtakeBoost>0?1.055:1;const defenseFactor=car.defenseBoost>0?1.006:1;const targetSpeed=paceFactor*tireFactor*wearPenalty*carFactor*variation*fuelPenalty*flagFactor*cornerLimit*drsFactor*attackFactor*defenseFactor;
   // Aceleração progressiva e frenagem mais rápida antes de curvas fechadas.
   const response=targetSpeed<(car.velocity||1)?(track.braking?.010:.006):.0038;const blend=1-Math.exp(-dt*response);car.velocity=(car.velocity||1)+(targetSpeed-(car.velocity||1))*blend;
   const speed=Math.max(.42,Math.min(1.12,car.velocity));
@@ -735,6 +789,7 @@ function tickRace(){
   if(car.pitRequested&&newLap>oldLap){car.pitRequested=false;car.pitTimer=4200;car.pitStops++;car.nextTire=car.requestedTire||'medium';car.requestedTire=null;raceMessage(`${car.name} entrou nos boxes para trocar pneus.`);}
   if(car.progress>=RACE_LAPS){car.finished=true;car.finishTime=race.elapsed;}
  });
+ resolveRacePasses();
  const snapshotBucket=Math.floor(race.elapsed/5000);if(snapshotBucket>(race.lastSnapshotAt||0)){race.lastSnapshotAt=snapshotBucket;saveRaceSnapshot();}
  if(race.cars.every(c=>c.finished)){finishRace();return;}renderRace();drawRaceTrack();
 }
@@ -742,8 +797,8 @@ function tireName(t){return ({soft:'Macio',medium:'Médio',hard:'Duro',intermedi
 function selectedRaceCar(){if(!race)return null;const selectedName=$('raceDriverSelect').value;return race.cars.find(c=>c.teamId===career?.teamId&&c.name===selectedName)||null;}
 function callPit(){const car=selectedRaceCar();if(!race?.running||!car||car.finished)return;if(car.pitRequested||car.pitTimer>0){raceMessage(`${car.name} já tem uma parada programada ou está nos boxes.`);return;}car.pitRequested=true;car.requestedTire=$('raceTireSelect').value;raceMessage(`Ordem enviada: ${car.name} vai parar na próxima passagem pela linha de chegada.`);renderRace();}
 function applyPace(){const car=selectedRaceCar();if(!car)return;car.pace=$('racePaceSelect').value;raceMessage(`Ritmo de ${car.name}: ${car.pace==='push'?'ataque':car.pace==='conservative'?'conservador':'equilibrado'}.`);renderRace();}
-function renderRace(){if(!race)return;const cars=[...race.cars].sort((a,b)=>(a.retired?1:0)-(b.retired?1:0)||b.progress-a.progress);const own=selectedRaceCar();const lap=Math.min(RACE_LAPS,Math.max(1,Math.floor((own?.progress||0))+1));$('raceLap').textContent=`${lap} / ${RACE_LAPS}`;$('raceClock').textContent=formatRaceTime(race.elapsed);$('raceRunning').textContent=race.cars.filter(c=>!c.finished).length;$('racePitCount').textContent=race.cars.filter(c=>c.teamId===career.teamId).reduce((a,c)=>a+c.pitStops,0);$('raceLeaderboard').innerHTML=`<table><thead><tr><th>POS</th><th>PILOTO</th><th>EQUIPE</th><th>VOLTA</th><th>PNEU</th><th>STATUS</th></tr></thead><tbody>${cars.map((c,i)=>`<tr class="${c.teamId===career.teamId?'own-car':''}" style="--team:${c.color}"><td><strong>${i+1}</strong></td><td>${c.name}${c.teamId===career.teamId?' ★':''}</td><td>${c.team}</td><td>${Math.min(RACE_LAPS,Math.max(0,Math.floor(c.progress)))}/${RACE_LAPS}</td><td>${tireName(c.tire)}</td><td>${c.retired?'ABANDONO':c.finished?'FINALIZADO':'EM PROVA'}</td></tr>`).join('')}</tbody></table>`;
- if(own){$('raceDriverStatus').innerHTML=`<div class="race-statrow"><span>${own.name}</span><strong>${own.retired?'Abandono':own.finished?'Finalizado':`P${cars.findIndex(c=>c===own)+1}`}</strong></div><div class="race-statrow"><span>Ritmo</span><strong>${own.pace==='push'?'Ataque':own.pace==='conservative'?'Conservador':'Equilibrado'}</strong></div><div class="race-statrow"><span>Pneu atual</span><strong>${tireName(own.tire)}</strong></div><div class="race-statrow"><span>Paradas</span><strong>${own.pitStops}</strong></div>`;$('tireMeter').style.width=`${Math.max(0,100-own.wear*100)}%`;$('tireValue').textContent=`${Math.round(own.wear*100)}% usado`;$('tireLabel').textContent=tireName(own.tire);$('fuelMeter').style.width=`${own.fuel}%`;$('fuelValue').textContent=`${Math.round(own.fuel)}%`;$('pitCallBtn').disabled=!race.running||own.finished||own.pitRequested||own.pitTimer>0;}const weather=WEATHER_LABELS[race.weather]||'Seco';const flag=FLAG_LABELS[race.flag]||'Verde';const recommendation=race.trackWetness>.68?'Recomendação: pneus de chuva extrema.':race.trackWetness>.22?'Recomendação: pneus intermediários.':race.weather==='dry'?'Recomendação: pneus slick.':'Acompanhe a evolução da pista.';$('raceEventStatus').innerHTML=`<div class="race-statrow"><span>Clima</span><strong>${weather}</strong></div><div class="race-statrow"><span>Condição da pista</span><strong>${Math.round(race.trackWetness*100)}% molhada</strong></div><div class="race-statrow"><span>Bandeira</span><strong>${flag}</strong></div><p class="muted">${escapeHTML(race.eventText||'Pista liberada.')}<br>${recommendation}</p>`; }
+function renderRace(){if(!race)return;const cars=[...race.cars].sort((a,b)=>(a.retired?1:0)-(b.retired?1:0)||b.progress-a.progress);const own=selectedRaceCar();const lap=Math.min(RACE_LAPS,Math.max(1,Math.floor((own?.progress||0))+1));$('raceLap').textContent=`${lap} / ${RACE_LAPS}`;$('raceClock').textContent=formatRaceTime(race.elapsed);$('raceRunning').textContent=race.cars.filter(c=>!c.finished).length;$('racePitCount').textContent=race.cars.filter(c=>c.teamId===career.teamId).reduce((a,c)=>a+c.pitStops,0);$('raceLeaderboard').innerHTML=`<table><thead><tr><th>POS</th><th>PILOTO</th><th>EQUIPE</th><th>VOLTA</th><th>PNEU</th><th>STATUS</th></tr></thead><tbody>${cars.map((c,i)=>`<tr class="${c.teamId===career.teamId?'own-car':''}" style="--team:${c.color}"><td><strong>${i+1}</strong></td><td>${c.name}${c.teamId===career.teamId?' ★':''}</td><td>${c.team}</td><td>${Math.min(RACE_LAPS,Math.max(0,Math.floor(c.progress)))}/${RACE_LAPS}</td><td>${tireName(c.tire)}</td><td>${c.retired?'ABANDONO':c.finished?'FINALIZADO':c.battleState==='attacking'?'ATACANDO':c.battleState==='defending'?'DEFENDENDO':c.battleState==='pressuring'?'PRESSIONANDO':c.drsActive?'DRS':'EM PROVA'}</td></tr>`).join('')}</tbody></table>`;
+ if(own){$('raceDriverStatus').innerHTML=`<div class="race-statrow"><span>${own.name}</span><strong>${own.retired?'Abandono':own.finished?'Finalizado':`P${cars.findIndex(c=>c===own)+1}`}</strong></div><div class="race-statrow"><span>Ritmo</span><strong>${own.pace==='push'?'Ataque':own.pace==='conservative'?'Conservador':'Equilibrado'}</strong></div><div class="race-statrow"><span>Pneu atual</span><strong>${tireName(own.tire)}</strong></div><div class="race-statrow"><span>Paradas</span><strong>${own.pitStops}</strong></div><div class="race-statrow"><span>Disputa</span><strong>${own.battleState==='attacking'?'Atacando':own.battleState==='defending'?'Defendendo':own.battleState==='pressuring'?'Pressionando':own.drsActive?'DRS disponível':'Sem disputa'}</strong></div><div class="race-statrow"><span>Ultrapassagens</span><strong>${own.overtakes||0}</strong></div>`;$('tireMeter').style.width=`${Math.max(0,100-own.wear*100)}%`;$('tireValue').textContent=`${Math.round(own.wear*100)}% usado`;$('tireLabel').textContent=tireName(own.tire);$('fuelMeter').style.width=`${own.fuel}%`;$('fuelValue').textContent=`${Math.round(own.fuel)}%`;$('pitCallBtn').disabled=!race.running||own.finished||own.pitRequested||own.pitTimer>0;}const weather=WEATHER_LABELS[race.weather]||'Seco';const flag=FLAG_LABELS[race.flag]||'Verde';const recommendation=race.trackWetness>.68?'Recomendação: pneus de chuva extrema.':race.trackWetness>.22?'Recomendação: pneus intermediários.':race.weather==='dry'?'Recomendação: pneus slick.':'Acompanhe a evolução da pista.';$('raceEventStatus').innerHTML=`<div class="race-statrow"><span>Clima</span><strong>${weather}</strong></div><div class="race-statrow"><span>Condição da pista</span><strong>${Math.round(race.trackWetness*100)}% molhada</strong></div><div class="race-statrow"><span>Bandeira</span><strong>${flag}</strong></div><p class="muted">${escapeHTML(race.eventText||'Pista liberada.')}<br>${recommendation}</p>`; }
 function formatRaceTime(ms){const s=Math.floor(ms/1000);return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
 function finishRace(){
  if(!race||race.finished)return;
